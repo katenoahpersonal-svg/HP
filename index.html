@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#06070f" />
+<title>Hope Pixel — The Atelier</title>
+<meta name="description" content="Hope Pixel — a luminous digital atelier. Walk a cinematic 5D gallery of web design & UI/UX, led by Kate." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0d1e'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='32' fill='%23d8b878' text-anchor='middle'%3EHP%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   HOPE PIXEL — THE ATELIER
+   A single-file, 5D gallery site. Sections in this stylesheet:
+     [A] Palette & mood tokens      [B] Base / typography
+     [C] UI chrome (nav, bars)      [D] The 3D stage & room planes
+     [E] Frames, placards, light    [F] Atrium artworks (CSS art)
+     [G] Portfolio thumbnails       [H] Doorway / portal
+     [I] Entrance & atmosphere      [J] Level-3 site viewer
+     [K] Contact modal              [L] Flat (phone) fallback
+   All copy & project data live in the CONFIG/DATA block of the
+   <script> at the bottom — edit there, not here.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── [A] PALETTE & MOOD ─────────────────────────────────────────── */
+:root{
+  --bg:        #06070f;   /* deep space behind everything            */
+  --ink:       #ece7da;   /* soft ivory text                         */
+  --ink-dim:   #a9a698;
+  --champ:     #d8b878;   /* champagne gold                          */
+  --champ-2:   #f0d9a8;
+  --champ-soft:rgba(216,184,120,.38);
+  --peri:      #9aa5ff;   /* periwinkle                              */
+  --blue:      #5b79ff;   /* electric blue glow                      */
+  --blush:     #e6a89f;
+  --glass:     rgba(10,13,26,.58);
+  --glass-brd: rgba(216,184,120,.22);
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --sans:  "Inter", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+}
+/* Mood colours (Dusk = default). Registered with @property so they
+   CROSS-FADE smoothly when the mood changes. IMPORTANT: moods must never
+   use `filter` on 3D planes — filtered/masked elements inside preserve-3d
+   break the browser's depth sorting and make the room flicker. */
+@property --w1  { syntax:"<color>"; inherits:true; initial-value:#1b2036; }
+@property --w2  { syntax:"<color>"; inherits:true; initial-value:#141830; }
+@property --w3  { syntax:"<color>"; inherits:true; initial-value:#0a0c18; }
+@property --cove{ syntax:"<color>"; inherits:true; initial-value:rgba(154,165,255,.14); }
+@property --fla { syntax:"<color>"; inherits:true; initial-value:rgba(13,16,32,.9); }
+@property --flb { syntax:"<color>"; inherits:true; initial-value:rgba(7,9,19,.84); }
+@property --spot{ syntax:"<color>"; inherits:true; initial-value:rgba(232,214,170,.5); }
+@property --portal-glow{ syntax:"<color>"; inherits:true; initial-value:rgba(122,146,255,.55); }
+@property --amb-a{ syntax:"<color>"; inherits:true; initial-value:rgba(64,74,150,.16); }
+@property --amb-b{ syntax:"<color>"; inherits:true; initial-value:rgba(216,184,120,.05); }
+@property --sky1 { syntax:"<color>"; inherits:true; initial-value:#12173a; }
+@property --sky2 { syntax:"<color>"; inherits:true; initial-value:#04060e; }
+@property --moonC{ syntax:"<color>"; inherits:true; initial-value:rgba(232,240,255,.95); }
+@property --starO{ syntax:"<number>"; inherits:true; initial-value:.85; }
+body{
+  --w1:#1b2036; --w2:#141830; --w3:#0a0c18;
+  --cove:rgba(154,165,255,.16);
+  --fla:rgba(13,16,32,.9); --flb:rgba(7,9,19,.84);
+  --spot:rgba(232,214,170,.5); --portal-glow:rgba(122,146,255,.55);
+  --amb-a:rgba(64,74,150,.16); --amb-b:rgba(216,184,120,.05);
+  --sky1:#12173a; --sky2:#04060e;
+  --moonC:rgba(232,240,255,.95); --starO:.85;
+  transition:--w1 1.4s ease, --w2 1.4s ease, --w3 1.4s ease, --cove 1.4s ease,
+    --fla 1.4s ease, --flb 1.4s ease, --spot 1.4s ease, --portal-glow 1.4s ease,
+    --amb-a 1.4s ease, --amb-b 1.4s ease,
+    --sky1 1.4s ease, --sky2 1.4s ease, --moonC 1.4s ease, --starO 1.4s ease;
+}
+body[data-mood="dawn"]{
+  --w1:#3a322c; --w2:#2a2226; --w3:#181215;
+  --cove:rgba(255,206,150,.2);
+  --fla:rgba(30,23,24,.9); --flb:rgba(16,12,12,.84);
+  --spot:rgba(255,226,180,.6); --portal-glow:rgba(240,190,140,.55);
+  --amb-a:rgba(210,150,110,.14); --amb-b:rgba(240,200,150,.09);
+  --sky1:#553a44; --sky2:#150e14;
+  --moonC:rgba(255,224,186,.9); --starO:.22;
+}
+body[data-mood="midnight"]{
+  --w1:#111427; --w2:#0c0f1f; --w3:#060810;
+  --cove:rgba(120,150,255,.12);
+  --fla:rgba(8,10,22,.92); --flb:rgba(4,6,14,.86);
+  --spot:rgba(150,180,255,.46); --portal-glow:rgba(90,130,255,.7);
+  --amb-a:rgba(38,52,140,.2); --amb-b:rgba(90,120,255,.05);
+  --sky1:#0a0e26; --sky2:#010208;
+  --moonC:rgba(205,224,255,1); --starO:1;
+}
+
+/* ── [B] BASE ───────────────────────────────────────────────────── */
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-weight:400; font-size:16px;
+  line-height:1.55; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body.flat{ overflow:auto; }
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+/* structural spans nested in <button>s need explicit display (rule 6) */
+button span, button i, button b{ display:block; }
+img{ max-width:100%; }
+.sr-only{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip:rect(0 0 0 0); white-space:nowrap;
+}
+.grad-text{ color:var(--champ-2); }
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .grad-text{
+    background:linear-gradient(105deg,#f4e3bb 8%, #d8b878 42%, #9aa5ff 96%);
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+  }
+}
+:focus-visible{ outline:2px solid var(--peri); outline-offset:3px; border-radius:4px; }
+
+/* ── [C] UI CHROME ──────────────────────────────────────────────── */
+.ui{ position:fixed; z-index:40; }
+#topnav{
+  inset:0 0 auto 0; height:60px;
+  display:flex; align-items:center; gap:22px; padding:0 22px;
+  background:linear-gradient(180deg, rgba(6,7,15,.84), rgba(6,7,15,.5));
+  -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px);
+  border-bottom:1px solid var(--glass-brd);
+}
+#brand{ display:flex; align-items:center; gap:12px; }
+#brand .hp{
+  width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--serif); font-size:15px; color:var(--champ-2);
+  border:1px solid var(--champ-soft);
+  background:radial-gradient(circle at 32% 28%, rgba(216,184,120,.2), rgba(10,13,26,.6) 70%);
+  box-shadow:0 0 18px rgba(216,184,120,.15);
+}
+#brand .bn{ line-height:1.15; text-align:left; }
+#brand .bn b{ display:block; font-family:var(--serif); font-weight:500; font-size:15px; letter-spacing:.14em; }
+#brand .bn span{ display:block; font-size:10px; letter-spacing:.34em; text-transform:uppercase; color:var(--ink-dim); }
+#navlinks{ display:flex; gap:4px; margin-left:auto; }
+#navlinks button{
+  padding:8px 13px; font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-dim); border-radius:20px; transition:color .3s, background .3s;
+}
+#navlinks button:hover{ color:var(--ink); background:rgba(216,184,120,.08); }
+#navlinks button[aria-current="true"]{ color:var(--champ-2); }
+#startBtn{
+  padding:9px 18px; border-radius:22px; font-size:12.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:#0b0d1a; font-weight:600;
+  background:linear-gradient(120deg, #eed9a8, #d8b878);
+  box-shadow:0 2px 20px rgba(216,184,120,.28);
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+#startBtn:hover{ transform:translateY(-1px); box-shadow:0 4px 26px rgba(216,184,120,.42); }
+
+#botbar{
+  inset:auto 0 14px 0; display:flex; justify-content:center; pointer-events:none;
+}
+#botbar .tray{
+  pointer-events:auto; display:flex; align-items:center; gap:14px;
+  padding:9px 16px; border-radius:30px;
+  background:rgba(10,13,26,.74); border:1px solid var(--glass-brd);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
+}
+#backCue{
+  font-size:12px; letter-spacing:.1em; color:var(--champ-2);
+  padding:6px 12px; border-radius:18px; border:1px solid transparent;
+  transition:opacity .4s, border-color .3s; white-space:nowrap;
+}
+#backCue:hover{ border-color:var(--champ-soft); }
+#backCue[data-idle="1"]{ opacity:.32; pointer-events:none; }
+.tray .sep{ width:1px; height:20px; background:var(--glass-brd); }
+.dots{ display:flex; align-items:center; gap:6px; }
+.dots button{
+  width:auto; padding:5px 4px; display:flex; align-items:center; gap:6px;
+  color:var(--ink-dim); transition:color .3s;
+}
+.dots button i{
+  width:7px; height:7px; border-radius:50%;
+  background:rgba(236,231,218,.28); transition:all .35s ease;
+}
+.dots button span{
+  font-size:10.5px; letter-spacing:.18em; text-transform:uppercase;
+  max-width:0; overflow:hidden; white-space:nowrap; transition:max-width .45s ease, opacity .3s;
+  opacity:0;
+}
+.dots button[aria-current="true"]{ color:var(--champ-2); }
+.dots button[aria-current="true"] i{ background:var(--champ); box-shadow:0 0 10px var(--champ-soft); }
+.dots button[aria-current="true"] span{ max-width:90px; opacity:1; }
+.dots button:hover i{ background:var(--peri); }
+.arrowBtn{
+  width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  color:var(--ink-dim); border:1px solid transparent; font-size:15px;
+  transition:all .3s;
+}
+.arrowBtn:hover{ color:var(--champ-2); border-color:var(--glass-brd); }
+#moodSeg{ display:flex; gap:2px; }
+#moodSeg button{
+  font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  padding:5px 9px; border-radius:14px; color:var(--ink-dim); transition:all .3s;
+}
+#moodSeg button[aria-pressed="true"]{ color:#0b0d1a; background:linear-gradient(120deg,#eed9a8,#d8b878); font-weight:600; }
+#soundBtn{
+  width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  color:var(--ink-dim); border:1px solid transparent; transition:all .3s;
+}
+#soundBtn:hover{ color:var(--champ-2); border-color:var(--glass-brd); }
+#soundBtn[aria-pressed="true"]{ color:var(--champ-2); border-color:var(--champ-soft); box-shadow:0 0 14px rgba(216,184,120,.2); }
+#soundBtn svg{ width:16px; height:16px; display:block; }
+
+#hint{
+  position:fixed; z-index:39; left:50%; bottom:74px; transform:translateX(-50%);
+  padding:8px 18px; border-radius:20px; font-size:12.5px; letter-spacing:.06em;
+  color:var(--ink-dim); background:rgba(8,10,20,.65); border:1px solid var(--glass-brd);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  opacity:0; transition:opacity 1s ease; pointer-events:none; text-align:center;
+}
+#hint.on{ opacity:1; }
+#hint b{ color:var(--champ-2); font-weight:500; }
+
+/* ── [D] THE 3D STAGE ───────────────────────────────────────────── */
+#stage{
+  position:fixed; inset:0; overflow:hidden;
+  perspective:1000px; perspective-origin:50% 50%;
+  cursor:grab; touch-action:none;
+  user-select:none; -webkit-user-select:none;      /* drags must never select text */
+  -webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(120% 90% at 50% 10%, #0b0e1e 0%, var(--bg) 70%);
+}
+#stage.dragging{ cursor:grabbing; }
+body.flat #stage, body.flat #botbar, body.flat #hint{ display:none; }
+#world{
+  position:absolute; left:50%; top:50%; width:0; height:0;
+  transform-style:preserve-3d; will-change:transform;
+}
+.plane{ position:absolute; }
+.wall, .floor, .sky{ backface-visibility:hidden; }
+.wall{
+  background:
+    linear-gradient(180deg, var(--w1) 0%, var(--w2) 40%, var(--w3) 100%);
+  box-shadow:inset 0 0 140px rgba(0,0,0,.55);
+}
+/* the rooms are ROOFLESS — sky-glow washes the parapet, with a gilt trim rail */
+.wall::before{
+  content:""; position:absolute; inset:0 0 auto 0; height:11%;
+  background:linear-gradient(180deg, var(--cove), transparent);
+  border-top:1px solid rgba(216,184,120,.26);
+}
+.wall::after{
+  content:""; position:absolute; inset:auto 0 0 0; height:34px;
+  background:linear-gradient(180deg, rgba(216,184,120,.16), rgba(216,184,120,.05) 30%, rgba(0,0,0,.4));
+  border-top:1px solid rgba(216,184,120,.2);
+}
+/* the lintel is only the top 520px of a wall — keep its gradient aligned */
+.wall.lint{ background-size:100% 1300px; background-repeat:no-repeat; }
+.wall.lint::after{ display:none; }
+.floor{
+  /* slightly translucent so mirrored artworks shimmer through (5D: LIGHT) */
+  background:
+    repeating-linear-gradient(90deg, rgba(200,210,255,.028) 0 2px, transparent 2px 236px),
+    linear-gradient(180deg, var(--fla), var(--flb) 55%, var(--fla));
+}
+/* the night SKY — one vast plane high above both roofless rooms */
+.sky{
+  background:
+    radial-gradient(6% 5% at 42% 84%, var(--moonC), transparent 60%),
+    radial-gradient(17% 14% at 42% 84%, rgba(190,205,255,.3), transparent 70%),
+    radial-gradient(75% 70% at 50% 55%, var(--sky1), var(--sky2) 100%);
+}
+.sky::before{ /* tiled starfield */
+  content:""; position:absolute; inset:0; opacity:var(--starO);
+  background-image:
+    radial-gradient(1.6px 1.6px at 22px 34px, rgba(255,255,255,.9), transparent 55%),
+    radial-gradient(1.1px 1.1px at 128px 92px, rgba(214,224,255,.85), transparent 55%),
+    radial-gradient(1px 1px at 66px 148px, rgba(255,244,214,.75), transparent 55%),
+    radial-gradient(1.3px 1.3px at 192px 42px, rgba(255,255,255,.7), transparent 55%),
+    radial-gradient(.9px .9px at 160px 168px, rgba(200,214,255,.7), transparent 55%);
+  background-size:234px 196px;
+}
+.sky::after{ /* faint milky-way band, slowly breathing */
+  content:""; position:absolute; inset:-4%;
+  background:linear-gradient(118deg, transparent 32%, rgba(140,160,230,.11) 46%,
+    rgba(216,190,150,.06) 52%, rgba(140,160,230,.09) 58%, transparent 72%);
+  animation:milky 16s ease-in-out infinite alternate;
+}
+@keyframes milky{ from{ opacity:.45; } to{ opacity:1; } }
+</style>
+
+<style>
+/* ── [E] FRAMES, PLACARDS, LIGHT ────────────────────────────────── */
+.frame{
+  position:absolute; text-align:left;
+  transition:opacity .8s ease;
+}
+/* while the camera is walking, frames don't catch hovers/clicks —
+   stops mats pulsing mid-glide and mis-clicks during transit */
+body.walking .frame{ pointer-events:none; }
+.frame-mat{
+  position:absolute; inset:0; padding:16px; border-radius:6px;
+  background:linear-gradient(165deg, #171d33, #0d1122 60%, #0a0d1c);
+  border:1px solid var(--champ-soft);
+  box-shadow:
+    0 0 0 1px rgba(8,10,20,.9),
+    0 30px 60px rgba(0,0,0,.55),
+    0 0 46px rgba(216,184,120,.09),
+    inset 0 0 30px rgba(0,0,0,.5);
+  transition:box-shadow .5s ease, border-color .5s ease, transform .5s ease;
+}
+.frame:hover .frame-mat, .frame:focus-visible .frame-mat{
+  border-color:rgba(240,217,168,.65);
+  box-shadow:
+    0 0 0 1px rgba(8,10,20,.9),
+    0 34px 70px rgba(0,0,0,.6),
+    0 0 70px rgba(216,184,120,.2),
+    inset 0 0 30px rgba(0,0,0,.5);
+  transform:scale(1.008);
+}
+.frame-art{
+  position:absolute; inset:16px; border-radius:3px; overflow:hidden;
+  background:#0b0f20;
+  transition:opacity .7s ease, filter .7s ease;
+}
+/* rule 2: focused info lives ON the frame, fully contained */
+.frame-info{
+  position:absolute; inset:16px; z-index:3; border-radius:3px;
+  display:flex; flex-direction:column; justify-content:center; gap:14px;
+  padding:9% 10%;
+  background:linear-gradient(170deg, rgba(9,12,24,.78), rgba(9,12,24,.62));
+  opacity:0; transition:opacity .8s ease .15s; pointer-events:none;
+}
+.frame.focused .frame-info{ opacity:1; }
+.frame.focused .frame-art{ opacity:.15; filter:blur(2px) saturate(.7); }
+.frame.focused .frame-mat{
+  border-color:rgba(240,217,168,.75);
+  box-shadow:0 0 0 1px rgba(8,10,20,.9), 0 34px 80px rgba(0,0,0,.65), 0 0 90px rgba(216,184,120,.25), inset 0 0 30px rgba(0,0,0,.5);
+  transform:none;   /* no hover pulse while reading */
+}
+.frame.dimmed{ opacity:.1; }
+.fi-kick{ font-size:15px; letter-spacing:.34em; text-transform:uppercase; color:var(--champ); }
+.fi-title{ font-family:var(--serif); font-weight:400; font-size:52px; line-height:1.06; }
+.fi-body{ font-size:20px; line-height:1.6; color:var(--ink-dim); font-weight:300; }
+.fi-tags{ display:flex; flex-wrap:wrap; gap:9px; margin-top:6px; }
+.fi-tags span{
+  font-size:14px; letter-spacing:.08em; padding:6px 14px; border-radius:16px;
+  color:var(--peri); border:1px solid rgba(154,165,255,.32);
+  background:rgba(91,121,255,.08);
+}
+.fi-cta{
+  margin-top:10px; align-self:flex-start; font-size:15px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--champ-2);
+  padding:10px 0; border-bottom:1px solid var(--champ-soft);
+}
+/* volumetric spotlight cone above each frame (5D: LIGHT) */
+/* with the roofs OFF these read as MOONBEAMS falling from the open sky —
+   tall shafts rising past the parapets. (They stay parallel to their wall
+   and well below the sky plane, so nothing intersects → no sort flicker.) */
+.frame-light{
+  position:absolute; bottom:99%; left:50%; width:118%; height:560px;
+  transform:translateX(-50%);
+  background:linear-gradient(180deg, transparent 2%, var(--spot) 97%);
+  clip-path:polygon(42% 0, 58% 0, 100% 100%, 0 100%);
+  opacity:.2; filter:blur(6px); pointer-events:none;
+  transition:opacity .8s ease;
+}
+.frame:hover .frame-light{ opacity:.34; }
+.frame.focused .frame-light{ opacity:.44; }
+/* brass picture lamp mounted over every frame (5D: LIGHT) */
+.frame-lamp{
+  position:absolute; left:50%; top:-30px; transform:translateX(-50%);
+  width:38%; height:10px; border-radius:6px; pointer-events:none;
+  background:linear-gradient(180deg, #f4dfae, #b98d4d 58%, #7c5f2e);
+  box-shadow:0 2px 18px rgba(240,205,140,.5), 0 0 50px rgba(240,190,120,.22);
+}
+.frame-lamp::before{
+  content:""; position:absolute; left:50%; top:100%; width:3px; height:22px;
+  transform:translateX(-50%);
+  background:linear-gradient(180deg, #c8a15c, rgba(200,161,92,.15));
+}
+.lampglow{ /* warm wash the lamp throws over the top of the art */
+  position:absolute; inset:16px; z-index:2; pointer-events:none; border-radius:3px;
+  background:linear-gradient(180deg, rgba(255,222,166,.22), rgba(255,222,166,.05) 40%, transparent 62%);
+}
+.frame.dimmed .frame-light{ opacity:.05; }
+.frame-halo{
+  position:absolute; inset:-11% -14%; z-index:-1; pointer-events:none;
+  background:radial-gradient(58% 58% at 50% 42%, var(--spot), transparent 72%);
+  opacity:.2; filter:blur(6px); transition:opacity .8s ease;
+}
+.frame.focused .frame-halo{ opacity:.34; }
+/* mirrored twin in the glossy floor */
+.reflection{ position:absolute; pointer-events:none; }
+/* blur + mask live on a FLAT inner layer: putting them on the
+   3D-transformed element itself breaks depth sorting (ghost frames
+   floating over the room — the big glitch) */
+.reflection .rin{
+  position:absolute; inset:0; opacity:.32; filter:blur(1.2px);
+  -webkit-mask-image:linear-gradient(180deg, transparent 24%, rgba(0,0,0,.75) 100%);
+  mask-image:linear-gradient(180deg, transparent 24%, rgba(0,0,0,.75) 100%);
+}
+.reflection .frame-mat{ box-shadow:none; }
+.reflection *{ animation:none !important; }   /* mirrored art doesn't animate */
+/* brass wall sconces — quiet candle-points of warmth between the works.
+   Each is its own small plane 16px off the wall (frames sit at 10px, so
+   every depth in the room is distinct — nothing coplanar, nothing fights). */
+.sconce{ pointer-events:none; }
+.sconce i{
+  position:absolute; left:50%; top:50%; width:10px; height:120px; display:block;
+  transform:translate(-50%,-50%); border-radius:6px;
+  background:linear-gradient(180deg, #f4dfae, #c8a15c 45%, #8a6a34);
+  box-shadow:0 0 22px rgba(240,205,140,.5), 0 0 80px rgba(240,190,120,.24);
+}
+.sconce::before, .sconce::after{
+  content:""; position:absolute; left:50%; transform:translateX(-50%);
+  width:72%; opacity:.3; filter:blur(6px);
+}
+.sconce::before{ bottom:55%; height:42%;
+  background:linear-gradient(0deg, var(--spot), transparent 92%);
+  clip-path:polygon(40% 100%, 60% 100%, 96% 0, 4% 0); }
+.sconce::after{ top:55%; height:42%;
+  background:linear-gradient(180deg, var(--spot), transparent 92%);
+  clip-path:polygon(40% 0, 60% 0, 96% 100%, 4% 100%); }
+/* engraved gallery placard (portfolio frames) */
+.placard{
+  position:absolute; left:16px; right:16px; bottom:16px; height:44px;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  border-radius:3px; border:1px solid rgba(216,184,120,.3);
+  background:linear-gradient(180deg, #1c2136, #12162a);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), inset 0 -8px 16px rgba(0,0,0,.35);
+}
+.placard b{ font-family:var(--serif); font-weight:500; font-size:17px; letter-spacing:.06em; color:var(--champ-2); }
+.placard span{ font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-dim); }
+.placard i{ font-style:normal; font-size:12px; color:var(--champ); letter-spacing:.1em; }
+
+/* ── [F] ATRIUM ARTWORKS (pure CSS art) ─────────────────────────── */
+.art-services{ background:linear-gradient(160deg, #10162e, #0a0e20 70%); }
+.art-services i{
+  position:absolute; border-radius:10px; border:1px solid rgba(154,165,255,.35);
+  background:linear-gradient(160deg, rgba(91,121,255,.16), rgba(13,17,34,.7));
+  box-shadow:0 18px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.art-services i::before, .art-services i::after{
+  content:""; position:absolute; left:12%; height:7%; border-radius:4px;
+  background:linear-gradient(90deg, rgba(216,184,120,.65), rgba(216,184,120,.1));
+}
+.art-services i::before{ top:16%; width:52%; }
+.art-services i::after{ top:34%; width:70%; background:linear-gradient(90deg, rgba(154,165,255,.5), rgba(154,165,255,.08)); }
+.art-services .c1{ left:9%; top:12%; width:56%; height:38%; animation:floaty 8s ease-in-out infinite alternate; }
+.art-services .c2{ left:31%; top:36%; width:60%; height:40%; animation:floaty 9.5s ease-in-out -3s infinite alternate-reverse; }
+.art-services .c3{ left:14%; top:62%; width:48%; height:30%; animation:floaty 11s ease-in-out -6s infinite alternate; }
+.art-services .cursor{
+  position:absolute; left:66%; top:58%; width:14px; height:14px; border-radius:50%;
+  border:0; background:var(--champ-2);
+  box-shadow:0 0 0 7px rgba(216,184,120,.22), 0 0 26px rgba(216,184,120,.8);
+  animation:floaty 7s ease-in-out -2s infinite alternate;
+}
+@keyframes floaty{ from{ transform:translateY(-7px); } to{ transform:translateY(7px); } }
+.art-process{ background:linear-gradient(200deg, #101731, #0a0e1f 75%); }
+.art-process .beam{
+  position:absolute; left:-12%; bottom:16%; width:130%; height:3px;
+  transform:rotate(-24deg); transform-origin:left bottom;
+  background:linear-gradient(90deg, transparent, rgba(216,184,120,.7) 30%, rgba(154,165,255,.7) 85%, transparent);
+  filter:blur(.4px);
+}
+.art-process .node{
+  position:absolute; width:15%; aspect-ratio:1; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(216,184,120,.5);
+  background:radial-gradient(circle at 34% 30%, rgba(216,184,120,.28), rgba(10,13,26,.85) 68%);
+  font-family:var(--serif); font-size:20px; color:var(--champ-2);
+  box-shadow:0 0 26px rgba(216,184,120,.24);
+}
+.art-process .n1{ left:8%;  bottom:16%; }
+.art-process .n2{ left:30%; bottom:33%; animation:nodePulse 4s ease-in-out infinite; }
+.art-process .n3{ left:52%; bottom:50%; animation:nodePulse 4s ease-in-out -1.4s infinite; }
+.art-process .n4{ left:74%; bottom:67%; border-color:rgba(154,165,255,.7); color:var(--peri); box-shadow:0 0 30px rgba(91,121,255,.4); animation:nodePulse 4s ease-in-out -2.8s infinite; }
+@keyframes nodePulse{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.09);} }
+.art-about{ background:linear-gradient(180deg, #0d1226, #0a0d1d 70%); }
+.art-about .arch{
+  position:absolute; left:18%; right:18%; top:10%; bottom:22%;
+  border-radius:50% 50% 4px 4px / 42% 42% 4px 4px;
+  border:1px solid rgba(216,184,120,.4);
+  background:
+    radial-gradient(70% 46% at 50% 34%, rgba(230,168,159,.32), transparent 70%),
+    linear-gradient(180deg, rgba(91,121,255,.18), rgba(10,13,26,.6) 80%);
+  overflow:hidden;
+}
+.art-about .arch::after{
+  content:""; position:absolute; left:14%; right:14%; top:30%; height:1px;
+  background:rgba(236,231,218,.35);
+  box-shadow:0 26px 0 rgba(236,231,218,.16), 0 52px 0 rgba(236,231,218,.09);
+}
+.art-about .sun{
+  position:absolute; left:50%; top:30%; width:24%; aspect-ratio:1;
+  transform:translate(-50%,-50%); border-radius:50%; border:0;
+  background:radial-gradient(circle at 40% 36%, #f4e0b4, #d8b878 58%, rgba(216,184,120,0) 76%);
+  box-shadow:0 0 46px rgba(240,217,168,.55);
+  animation:floaty 10s ease-in-out infinite alternate;
+}
+.art-about .k{
+  position:absolute; left:50%; bottom:4%; transform:translateX(-50%);
+  font-family:var(--serif); font-style:italic; font-size:44px; color:var(--champ-2);
+  text-shadow:0 0 26px rgba(216,184,120,.5);
+}
+/* gilded manifesto plaque (static, right of the doorway) */
+.plaque-static{
+  position:absolute; pointer-events:none;
+  border:1px solid rgba(216,184,120,.42); border-radius:5px;
+  background:linear-gradient(170deg, #171c31, #0e1224 70%);
+  box-shadow:0 26px 60px rgba(0,0,0,.55), 0 0 44px rgba(216,184,120,.08);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; text-align:center; padding:8%;
+}
+.plaque-static .rule{ width:44px; height:1px; background:var(--champ-soft); }
+.plaque-static b{ font-family:var(--serif); font-weight:400; font-size:29px; line-height:1.3; }
+.plaque-static span{ font-size:12px; letter-spacing:.4em; text-transform:uppercase; color:var(--champ); }
+
+/* ── [G] PORTFOLIO THUMBNAILS (mini websites) ───────────────────── */
+.thumb{
+  position:absolute; left:16px; right:16px; top:16px; bottom:66px;
+  border-radius:8px; overflow:hidden; background:var(--sb);
+  color:var(--si); font-family:var(--sans); text-align:left;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.thumb.serif .t-title{ font-family:var(--serif); }
+.t-bar{
+  display:flex; align-items:center; gap:10px; height:34px; padding:0 12px;
+  background:rgba(0,0,0,.14); border-bottom:1px solid rgba(0,0,0,.12);
+}
+.thumb.darkish .t-bar{ background:rgba(255,255,255,.05); border-bottom-color:rgba(255,255,255,.08); }
+.t-dots{ display:flex; gap:5px; }
+.t-dots i{ width:8px; height:8px; border-radius:50%; background:#e0655c; }
+.t-dots i:nth-child(2){ background:#e0b04f; } .t-dots i:nth-child(3){ background:#7cbf6f; }
+.t-url{
+  flex:1; text-align:center; font-size:11.5px; letter-spacing:.06em; opacity:.62;
+  background:rgba(0,0,0,.1); border-radius:10px; padding:3px 10px; margin:0 8px;
+}
+.thumb.darkish .t-url{ background:rgba(255,255,255,.07); }
+.t-hero{ padding:20px 18px 16px; background:linear-gradient(135deg, var(--sd), var(--sb) 72%); }
+.t-kick{ font-size:10.5px; letter-spacing:.3em; text-transform:uppercase; color:var(--sa); font-weight:600; }
+.t-title{ font-size:25px; line-height:1.14; font-weight:600; margin-top:7px; letter-spacing:-.01em; }
+.t-btns{ display:flex; gap:8px; margin-top:14px; }
+.t-btns i{ width:76px; height:22px; border-radius:12px; background:var(--sa); }
+.t-btns i + i{ background:transparent; border:1px solid var(--sa); opacity:.75; }
+.t-cards{ display:flex; gap:10px; padding:14px 18px; }
+.t-cards i{
+  flex:1; height:64px; border-radius:8px; background:var(--sc);
+  border:1px solid rgba(0,0,0,.1); position:relative; overflow:hidden;
+}
+.thumb.darkish .t-cards i{ border-color:rgba(255,255,255,.1); }
+.t-cards i::before{
+  content:""; position:absolute; left:12%; top:20%; width:34%; height:12%;
+  border-radius:3px; background:var(--sa); opacity:.85;
+}
+.t-cards i::after{
+  content:""; position:absolute; left:12%; top:46%; width:64%; height:9%;
+  border-radius:3px; background:currentColor; opacity:.22;
+}
+
+/* ── [H] DOORWAY / PORTAL ───────────────────────────────────────── */
+.portal-veil{
+  position:absolute; cursor:pointer;
+  background:linear-gradient(180deg, rgba(122,146,255,.06), var(--portal-glow) 140%);
+  border:1px solid rgba(154,165,255,.35); border-bottom:0;
+  border-radius:210px 210px 0 0;
+  box-shadow:0 0 60px var(--portal-glow), inset 0 0 80px rgba(122,146,255,.22);
+  transition:box-shadow .6s ease, opacity .8s ease;
+}
+.portal-veil:hover{ box-shadow:0 0 110px var(--portal-glow), inset 0 0 110px rgba(122,146,255,.3); }
+.portal-veil.dimmed{ opacity:.12; }
+.portal-veil .pulse{
+  position:absolute; inset:6% 10%; border-radius:inherit; pointer-events:none;
+  background:radial-gradient(60% 90% at 50% 100%, var(--portal-glow), transparent 70%);
+  animation:portalPulse 4.5s ease-in-out infinite; opacity:.5;
+}
+@keyframes portalPulse{ 0%,100%{ opacity:.3; } 50%{ opacity:.75; } }
+.door-label{
+  position:absolute; display:flex; align-items:center; justify-content:center;
+  pointer-events:none;
+  font-size:21px; letter-spacing:.5em; text-indent:.5em; text-transform:uppercase;
+  color:var(--champ-2); text-shadow:0 0 22px rgba(216,184,120,.6);
+}
+</style>
+
+<style>
+/* ── [I] ENTRANCE & ATMOSPHERE ──────────────────────────────────── */
+#entrance{
+  position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(90% 70% at 50% 40%, #0a0d1e, var(--bg) 80%);
+  transition:opacity 1.6s ease; text-align:center;
+}
+#entrance.gone{ opacity:0; pointer-events:none; }
+#entrance .inner{ animation:entRise 2.2s ease both; padding:20px; }
+@keyframes entRise{ from{ opacity:0; transform:translateY(18px); } 30%{opacity:1;} to{ opacity:1; transform:none; } }
+#entrance .hp{
+  width:64px; height:64px; margin:0 auto 22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--serif); font-size:24px; color:var(--champ-2);
+  border:1px solid var(--champ-soft);
+  background:radial-gradient(circle at 32% 28%, rgba(216,184,120,.22), rgba(10,13,26,.6) 70%);
+  box-shadow:0 0 44px rgba(216,184,120,.25);
+}
+#entrance h1{ font-family:var(--serif); font-weight:400; font-size:clamp(34px, 5vw, 56px); letter-spacing:.1em; }
+#entrance .sub{ margin-top:8px; font-size:12px; letter-spacing:.5em; text-indent:.5em; text-transform:uppercase; color:var(--champ); }
+#entrance .tag{ margin-top:26px; font-family:var(--serif); font-style:italic; font-size:clamp(17px,2.2vw,22px); color:var(--ink); }
+#entrance .tag2{ margin-top:12px; max-width:520px; margin-inline:auto; font-size:13.5px; font-weight:300; line-height:1.7; color:var(--ink-dim); }
+#entrance .enter{ margin-top:30px; font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:var(--ink-dim); animation:entBlink 2.4s ease 1.4s infinite; }
+@keyframes entBlink{ 0%,100%{opacity:.35;} 50%{opacity:.9;} }
+
+#amb{ /* screen-space ambient light wash over the room */
+  position:fixed; inset:0; z-index:20; pointer-events:none;
+  background:
+    radial-gradient(80% 60% at 50% 0%, var(--amb-a), transparent 70%),
+    radial-gradient(70% 46% at 50% 100%, var(--amb-b), transparent 70%);
+}
+#vig{ /* cinematic vignette */
+  position:fixed; inset:0; z-index:21; pointer-events:none;
+  background:radial-gradient(118% 90% at 50% 46%, transparent 58%, rgba(2,3,8,.62) 100%);
+}
+#grain{
+  position:fixed; inset:-40px; z-index:22; pointer-events:none; opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+}
+#motes{ position:fixed; inset:0; z-index:23; pointer-events:none; overflow:hidden; }
+#motes i{
+  position:absolute; border-radius:50%; background:rgba(240,226,196,.55);
+  filter:blur(1px); animation:mote linear infinite; opacity:0;
+}
+@keyframes mote{
+  0%{ transform:translate3d(0,0,0); opacity:0; }
+  12%{ opacity:.5; } 82%{ opacity:.32; }
+  100%{ transform:translate3d(var(--mx), -46vh, 0); opacity:0; }
+}
+body.flat #motes, body.flat #amb{ display:none; }
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}
+
+/* ── [J] LEVEL-3 SITE VIEWER ────────────────────────────────────── */
+#viewer{
+  position:fixed; inset:0; z-index:60; display:flex; flex-direction:column;
+  background:#05060c; opacity:0; transition:opacity .45s ease;
+}
+#viewer.on{ opacity:1; }
+#viewer[hidden]{ display:none; }
+.v-chrome{
+  height:56px; flex:0 0 auto; display:flex; align-items:center; gap:14px; padding:0 16px;
+  background:linear-gradient(180deg, #0b0d1a, #090a14);
+  border-bottom:1px solid var(--glass-brd);
+}
+#vBack{
+  display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:20px;
+  font-size:12.5px; letter-spacing:.1em; color:var(--champ-2);
+  border:1px solid var(--champ-soft); transition:all .3s;
+}
+#vBack:hover{ background:rgba(216,184,120,.1); }
+.v-dots{ display:flex; gap:6px; margin-left:6px; }
+.v-dots i{ width:11px; height:11px; border-radius:50%; background:#e0655c; }
+.v-dots i:nth-child(2){ background:#e0b04f; } .v-dots i:nth-child(3){ background:#7cbf6f; }
+#vUrl{
+  flex:1; max-width:430px; margin:0 auto; text-align:center;
+  font-size:13px; letter-spacing:.05em; color:var(--ink-dim);
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.07);
+  border-radius:16px; padding:6px 18px;
+}
+#vUrl b{ color:var(--ink); font-weight:500; }
+.v-dev{ display:flex; gap:2px; padding:3px; border-radius:18px; border:1px solid var(--glass-brd); }
+.v-dev button{
+  padding:6px 14px; border-radius:14px; font-size:11.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-dim); transition:all .3s;
+}
+.v-dev button[aria-pressed="true"]{ color:#0b0d1a; background:linear-gradient(120deg,#eed9a8,#d8b878); font-weight:600; }
+.v-stage{ flex:1; min-height:0; display:flex; justify-content:center; }
+#viewer.mobile .v-stage{ padding:16px 0 18px; }
+.site{
+  width:100%; height:100%; overflow-y:auto; overflow-x:hidden;
+  background:var(--sb); color:var(--si); scroll-behavior:smooth;
+  font-family:var(--sans);
+}
+#viewer.mobile .site{
+  width:min(400px, 94vw); border-radius:34px;
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 30px 90px rgba(0,0,0,.7), 0 0 0 8px #10121e;
+}
+@media (prefers-reduced-motion: reduce){ .site{ scroll-behavior:auto; } }
+
+/* — the mocked-up sites themselves (theme via --s* vars) — */
+.site.serif h1, .site.serif h2, .site.serif .s-logo, .site.serif .q-text{ font-family:var(--serif); font-weight:500; }
+.s-nav{
+  position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:20px;
+  padding:16px 6%; -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+  border-bottom:1px solid color-mix(in srgb, var(--si) 12%, transparent);
+  background:color-mix(in srgb, var(--sb) 82%, transparent);
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)){
+  .s-nav{ background:var(--sb); border-bottom:1px solid rgba(128,128,128,.25); }
+}
+.s-logo{ font-size:20px; font-weight:700; letter-spacing:.02em; }
+.s-logo em{ color:var(--sa); font-style:normal; }
+.s-links{ display:flex; gap:6px; margin-left:auto; }
+.s-links button{ padding:8px 12px; font-size:13.5px; border-radius:16px; opacity:.75; transition:all .25s; }
+.s-links button:hover{ opacity:1; background:var(--sd); color:var(--sa); }
+.s-btn{
+  display:inline-block; padding:13px 26px; border-radius:26px;
+  background:var(--sa); color:var(--sb); font-weight:600; font-size:14.5px;
+  transition:transform .25s ease, box-shadow .25s ease, opacity .25s;
+  box-shadow:0 8px 26px color-mix(in srgb, var(--sa) 36%, transparent);
+}
+.s-btn:hover{ transform:translateY(-2px); }
+.s-btn.ghost{ background:transparent; color:var(--sa); border:1px solid var(--sa); box-shadow:none; }
+.s-btn.small{ padding:9px 18px; font-size:13px; }
+.s-hero{
+  display:grid; grid-template-columns:1.05fr .95fr; gap:6%; align-items:center;
+  padding:9% 7% 8%; min-height:64%;
+  background:
+    radial-gradient(60% 80% at 84% 20%, color-mix(in srgb, var(--sa) 16%, transparent), transparent 70%),
+    linear-gradient(160deg, var(--sd), var(--sb) 64%);
+}
+.s-kick{ font-size:12.5px; letter-spacing:.32em; text-transform:uppercase; color:var(--sa); font-weight:700; }
+.s-hero h1{ font-size:clamp(34px, 4.6vw, 62px); line-height:1.05; letter-spacing:-.015em; margin:18px 0; }
+.s-sub{ font-size:17px; line-height:1.7; color:var(--sm); max-width:46ch; }
+.s-heroBtns{ display:flex; gap:14px; margin-top:30px; flex-wrap:wrap; }
+.s-sec{ padding:7% 7%; }
+.s-sec.tint{ background:var(--sd); }
+.s-h2{ font-size:clamp(26px,3vw,40px); letter-spacing:-.01em; margin-bottom:10px; }
+.s-lede{ color:var(--sm); max-width:60ch; margin-bottom:42px; font-size:16.5px; }
+.s-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.s-card{
+  padding:30px 26px; border-radius:16px; background:var(--sc);
+  border:1px solid color-mix(in srgb, var(--si) 10%, transparent);
+  transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+.s-card:hover{ transform:translateY(-5px); border-color:var(--sa); box-shadow:0 18px 44px rgba(0,0,0,.16); }
+.s-card .dot{ width:34px; height:34px; border-radius:10px; margin-bottom:18px;
+  background:linear-gradient(135deg, var(--sa), var(--sa2)); }
+.s-card h3{ font-size:18.5px; margin-bottom:9px; }
+.s-card p{ font-size:14.5px; line-height:1.65; color:var(--sm); }
+.s-work{ display:grid; grid-template-columns:repeat(2,1fr); gap:22px; }
+.s-tile{
+  border-radius:16px; overflow:hidden; background:var(--sc); text-align:left;
+  border:1px solid color-mix(in srgb, var(--si) 10%, transparent);
+  transition:transform .3s ease, border-color .3s ease;
+  display:block; width:100%;
+}
+.s-tile:hover{ transform:translateY(-5px); border-color:var(--sa); }
+.s-tile .art{ display:block; height:170px;
+  background:linear-gradient(120deg, var(--sa) -30%, var(--sd) 46%, var(--sa2) 130%); }
+.s-tile:nth-child(2n) .art{ background:linear-gradient(240deg, var(--sa2) -30%, var(--sd) 50%, var(--sa) 140%); }
+.s-tile .tx{ display:block; padding:18px 20px 20px; }
+.s-tile b{ display:block; font-size:16.5px; }
+.s-tile span{ display:block; font-size:13.5px; color:var(--sm); margin-top:5px; }
+.s-quote{ text-align:center; padding:8% 10%; }
+.q-text{ font-size:clamp(21px,2.6vw,32px); line-height:1.45; max-width:26ch; margin:0 auto; }
+.q-text::before{ content:"“"; color:var(--sa); }
+.q-text::after{ content:"”"; color:var(--sa); }
+.q-who{ margin-top:22px; font-size:13px; letter-spacing:.2em; text-transform:uppercase; color:var(--sm); }
+.q-who b{ color:var(--sa); }
+.s-cta{
+  margin:0 7% 7%; padding:7% 8%; border-radius:22px; text-align:center;
+  background:
+    radial-gradient(80% 120% at 50% 0%, color-mix(in srgb, var(--sa) 22%, transparent), transparent 70%),
+    var(--sc);
+  border:1px solid color-mix(in srgb, var(--sa) 40%, transparent);
+}
+.s-cta h2{ font-size:clamp(26px,3.4vw,44px); margin-bottom:12px; }
+.s-cta p{ color:var(--sm); margin-bottom:28px; }
+.s-foot{
+  padding:34px 7%; display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  border-top:1px solid color-mix(in srgb, var(--si) 10%, transparent);
+  font-size:13px; color:var(--sm);
+}
+.s-foot .s-logo{ font-size:16px; }
+.s-foot .cred{ margin-left:auto; }
+.s-foot .cred b{ color:var(--sa); }
+/* narrow (mobile toggle or small windows) */
+.site.narrow .s-hero{ grid-template-columns:1fr; padding-top:14%; gap:34px; }
+.site.narrow .s-cards, .site.narrow .s-work{ grid-template-columns:1fr; }
+.site.narrow .s-links{ display:none; }
+.site.narrow .s-sec{ padding:12% 7%; }
+/* hero side art variants */
+.h-art{ position:relative; min-height:300px; }
+.h-art .pane{
+  position:absolute; border-radius:18px;
+  background:linear-gradient(150deg, var(--sc), var(--sd));
+  border:1px solid color-mix(in srgb, var(--sa) 34%, transparent);
+  box-shadow:0 30px 70px rgba(0,0,0,.22);
+}
+.h-arch .pane{ inset:4% 10%; border-radius:46% 46% 18px 18px / 34% 34% 18px 18px; overflow:hidden; }
+.h-arch .pane::before{
+  content:""; position:absolute; left:50%; top:34%; width:38%; aspect-ratio:1;
+  transform:translate(-50%,-50%); border-radius:50%;
+  background:radial-gradient(circle at 38% 34%, var(--sa2), var(--sa) 70%);
+  box-shadow:0 0 60px color-mix(in srgb, var(--sa) 60%, transparent);
+}
+.h-arch .pane::after{
+  content:""; position:absolute; left:12%; right:12%; bottom:14%; height:34%;
+  border-radius:12px; background:color-mix(in srgb, var(--sb) 66%, transparent);
+  border:1px solid color-mix(in srgb, var(--sa) 26%, transparent);
+}
+.h-dash .pane{ inset:2% 4%; padding:8%; }
+.h-dash .row{ height:11%; border-radius:8px; margin-bottom:6%;
+  background:color-mix(in srgb, var(--sa) 16%, var(--sc));
+  border:1px solid color-mix(in srgb, var(--sa) 22%, transparent);
+  position:relative; overflow:hidden; }
+.h-dash .row::before{ content:""; position:absolute; left:4%; top:30%; bottom:30%; border-radius:4px; background:var(--sa); }
+.h-dash .r1::before{ width:56%; } .h-dash .r2::before{ width:72%; background:var(--sa2); }
+.h-dash .r3::before{ width:38%; } .h-dash .r4::before{ width:64%; background:var(--sa2); }
+.h-dash .spark{ height:34%; border-radius:10px; margin-top:2%;
+  background:
+    linear-gradient(100deg, transparent 46%, color-mix(in srgb, var(--sa) 50%, transparent) 47%, transparent 52%),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--sa) 30%, transparent) 0 3px, transparent 3px 17px),
+    color-mix(in srgb, var(--sa) 8%, var(--sc)); }
+.h-phone .pane{ inset:0 24%; border-radius:38px; padding:10% 8%; }
+.h-phone .ring{ position:absolute; left:50%; top:36%; width:52%; aspect-ratio:1;
+  transform:translate(-50%,-50%); border-radius:50%;
+  border:10px solid color-mix(in srgb, var(--sa) 30%, transparent);
+  border-top-color:var(--sa); }
+.h-phone .line{ position:absolute; left:16%; right:16%; height:9px; border-radius:5px;
+  background:color-mix(in srgb, var(--si) 20%, transparent); }
+.h-phone .l1{ bottom:26%; } .h-phone .l2{ bottom:18%; right:36%; background:var(--sa); }
+</style>
+
+<style>
+/* ── [K] CONTACT MODAL ──────────────────────────────────────────── */
+#modal{ position:fixed; inset:0; z-index:70; display:flex; align-items:center; justify-content:center; padding:20px; }
+#modal[hidden]{ display:none; }
+.m-back{
+  position:absolute; inset:0; cursor:pointer;
+  /* near-opaque so the 3D scene can never bleed through */
+  background:rgba(4,5,12,.94);
+  -webkit-backdrop-filter:blur(22px); backdrop-filter:blur(22px);
+}
+.m-card{
+  position:relative; width:min(560px, 100%); max-height:92vh; overflow-y:auto;
+  border-radius:20px; padding:40px 42px;
+  background:linear-gradient(165deg, rgba(20,25,45,.92), rgba(10,13,26,.96));
+  border:1px solid var(--glass-brd);
+  box-shadow:0 40px 120px rgba(0,0,0,.7), 0 0 80px rgba(216,184,120,.07);
+  animation:mIn .5s cubic-bezier(.2,.8,.25,1) both;
+}
+@keyframes mIn{ from{ opacity:0; transform:translateY(22px) scale(.97); } to{ opacity:1; transform:none; } }
+.m-x{
+  position:absolute; top:14px; right:16px; width:34px; height:34px; border-radius:50%;
+  font-size:19px; color:var(--ink-dim); border:1px solid transparent; transition:all .3s;
+  display:flex; align-items:center; justify-content:center;
+}
+.m-x:hover{ color:var(--ink); border-color:var(--glass-brd); }
+.m-kick{ font-size:11px; letter-spacing:.4em; text-transform:uppercase; color:var(--champ); }
+.m-card h2{ font-family:var(--serif); font-weight:400; font-size:32px; margin:10px 0 6px; }
+.m-sub{ font-size:14px; color:var(--ink-dim); margin-bottom:28px; font-weight:300; }
+.m-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.m-field{ margin-bottom:16px; }
+.m-field label{ display:block; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-dim); margin-bottom:8px; }
+.m-field input, .m-field select, .m-field textarea{
+  width:100%; padding:13px 15px; border-radius:10px; color:var(--ink);
+  font:inherit; font-size:14.5px;
+  background:rgba(255,255,255,.045); border:1px solid rgba(236,231,218,.14);
+  transition:border-color .3s, background .3s; -webkit-appearance:none; appearance:none;
+}
+.m-field textarea{ min-height:104px; resize:vertical; }
+.m-field input:focus, .m-field select:focus, .m-field textarea:focus{
+  outline:none; border-color:var(--champ-soft); background:rgba(216,184,120,.06);
+}
+.m-field select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23d8b878' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 15px center;
+}
+.m-field select option{ background:#12162a; color:var(--ink); }
+.m-send{
+  width:100%; margin-top:8px; padding:15px; border-radius:12px;
+  font-size:13px; letter-spacing:.2em; text-transform:uppercase; font-weight:600; color:#0b0d1a;
+  background:linear-gradient(120deg, #eed9a8, #d8b878);
+  box-shadow:0 6px 30px rgba(216,184,120,.25);
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+.m-send:hover{ transform:translateY(-2px); box-shadow:0 10px 40px rgba(216,184,120,.4); }
+.m-success{ text-align:center; padding:34px 6px 16px; }
+.m-success[hidden]{ display:none; }
+.m-check{
+  width:62px; height:62px; margin:0 auto 24px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:26px; color:var(--champ-2);
+  border:1px solid var(--champ-soft);
+  background:radial-gradient(circle at 34% 30%, rgba(216,184,120,.25), rgba(10,13,26,.4) 70%);
+  box-shadow:0 0 46px rgba(216,184,120,.3);
+}
+.m-success h3{ font-family:var(--serif); font-weight:400; font-size:30px; }
+.m-success p{ margin:12px auto 30px; max-width:36ch; font-size:14px; font-weight:300; color:var(--ink-dim); line-height:1.7; }
+.m-done{
+  padding:11px 26px; border-radius:22px; font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--champ-2); border:1px solid var(--champ-soft); transition:all .3s; margin:0 auto;
+}
+.m-done:hover{ background:rgba(216,184,120,.1); }
+
+/* ── [L] FLAT (PHONE / REDUCED-MOTION) FALLBACK ─────────────────── */
+#flat{ display:none; }
+body.flat #flat{ display:block; }
+#flat{ padding:86px 20px 60px; max-width:660px; margin:0 auto; }
+.f-hero{ text-align:center; padding:26px 0 44px; }
+.f-hero h1{ font-family:var(--serif); font-weight:400; font-size:clamp(32px,9vw,44px); letter-spacing:.06em; }
+.f-hero .sub{ margin-top:6px; font-size:10.5px; letter-spacing:.44em; text-transform:uppercase; color:var(--champ); }
+.f-hero .tag{ margin-top:20px; font-family:var(--serif); font-style:italic; font-size:18px; }
+.f-hero .tag2{ margin-top:10px; font-size:13.5px; font-weight:300; color:var(--ink-dim); line-height:1.7; }
+.f-sec{ margin-top:44px; }
+.f-sec > h2{
+  font-size:11px; letter-spacing:.4em; text-transform:uppercase; color:var(--champ);
+  text-align:center; margin-bottom:22px;
+}
+.f-card{
+  width:100%; text-align:left; margin-bottom:18px; border-radius:14px; overflow:hidden;
+  border:1px solid var(--glass-brd);
+  background:linear-gradient(165deg, #141a2e, #0b0e1e);
+  box-shadow:0 18px 44px rgba(0,0,0,.45);
+}
+.f-card .f-art{ position:relative; height:190px; overflow:hidden; }
+.f-card .f-art > span{ position:absolute; inset:0; }
+.f-card .f-head{
+  display:flex; align-items:baseline; gap:10px; padding:18px 20px 4px;
+}
+.f-card .f-head b{ font-family:var(--serif); font-weight:500; font-size:21px; }
+.f-card .f-head span{ font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--champ); margin-left:auto; text-align:right; }
+.f-card .f-more{ padding:0 20px 16px; font-size:12px; color:var(--ink-dim); letter-spacing:.06em; }
+.f-card .f-info{ max-height:0; overflow:hidden; transition:max-height .6s ease; }
+.f-card.open .f-info{ max-height:400px; }
+.f-card .f-info-in{ padding:2px 20px 20px; }
+.f-card .f-info-in p{ font-size:14.5px; font-weight:300; color:var(--ink-dim); line-height:1.7; }
+.f-card .f-info-in .fi-tags{ margin-top:14px; }
+.f-card .f-info-in .fi-tags span{ font-size:11.5px; padding:5px 11px; }
+.f-work-grid{ display:grid; grid-template-columns:1fr; gap:18px; }
+.f-thumb{
+  width:100%; text-align:left; border-radius:14px; overflow:hidden;
+  border:1px solid var(--glass-brd); background:#0d1122;
+  box-shadow:0 18px 44px rgba(0,0,0,.45);
+}
+#flat .thumb{ position:relative; inset:auto; }
+.f-thumb .f-plac{
+  display:flex; align-items:center; gap:9px; padding:13px 16px;
+  background:linear-gradient(180deg, #1c2136, #12162a);
+  border-top:1px solid rgba(216,184,120,.25);
+}
+.f-thumb .f-plac b{ font-family:var(--serif); font-weight:500; font-size:15px; color:var(--champ-2); }
+.f-thumb .f-plac span{ font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-dim); }
+.f-thumb .f-plac i{ font-style:normal; font-size:11px; color:var(--champ); }
+.f-cta{
+  margin-top:48px; text-align:center; padding:36px 24px; border-radius:16px;
+  border:1px solid var(--glass-brd); background:linear-gradient(165deg, #141a2e, #0b0e1e);
+}
+.f-cta h2{ font-family:var(--serif); font-weight:400; font-size:26px; margin-bottom:8px; }
+.f-cta p{ font-size:13.5px; font-weight:300; color:var(--ink-dim); margin-bottom:22px; }
+.f-foot{ margin-top:44px; text-align:center; font-size:12px; color:var(--ink-dim); }
+.f-foot b{ color:var(--champ-2); font-family:var(--serif); }
+@media (max-width:719px){
+  #topnav{ padding:0 14px; gap:10px; }
+  #navlinks{ display:none; }
+}
+</style>
+</head>
+
+<body data-mood="dusk">
+
+<!-- cinematic entrance -->
+<div id="entrance" aria-hidden="true">
+  <div class="inner">
+    <div class="hp">HP</div>
+    <h1 class="grad-text">HOPE PIXEL</h1>
+    <div class="sub">The Atelier</div>
+    <div class="tag">Websites. Interfaces. Visual worlds.</div>
+    <div class="tag2">Step inside. Elevated web design &amp; UI/UX — clean, cinematic, and easy to love — hung like light on the walls.</div>
+    <div class="enter">Entering the gallery…</div>
+  </div>
+</div>
+
+<!-- the 5D room (built by script) -->
+<div id="stage"><div id="world"></div></div>
+
+<!-- atmosphere: ambient wash, vignette, film grain, dust motes -->
+<div id="amb"></div>
+<div id="vig"></div>
+<div id="grain"></div>
+<div id="motes" aria-hidden="true"></div>
+
+<!-- top navigation -->
+<nav id="topnav" class="ui" aria-label="Primary">
+  <button id="brand" aria-label="Hope Pixel — return to the atrium">
+    <span class="hp">HP</span>
+    <span class="bn"><b>HOPE PIXEL</b><span>The Atelier</span></span>
+  </button>
+  <div id="navlinks">
+    <button data-nav="services">Services</button>
+    <button data-nav="work">Work</button>
+    <button data-nav="process">Process</button>
+    <button data-nav="about">About</button>
+  </div>
+  <button id="startBtn">Start a Project</button>
+</nav>
+
+<!-- bottom control tray -->
+<div id="botbar" class="ui">
+  <div class="tray">
+    <button id="backCue" data-idle="1">← Back to the atrium</button>
+    <span class="sep"></span>
+    <button class="arrowBtn" id="prevBtn" aria-label="Previous wall">‹</button>
+    <div class="dots" id="dots" role="tablist" aria-label="Gallery walls"></div>
+    <button class="arrowBtn" id="nextBtn" aria-label="Next wall">›</button>
+    <span class="sep"></span>
+    <div id="moodSeg" role="group" aria-label="Room mood">
+      <button data-mood="dawn" aria-pressed="false">Dawn</button>
+      <button data-mood="dusk" aria-pressed="true">Dusk</button>
+      <button data-mood="midnight" aria-pressed="false">Midnight</button>
+    </div>
+    <span class="sep"></span>
+    <button id="soundBtn" aria-pressed="false" aria-label="Toggle room sound">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M2 6v4h2.6L8 13V3L4.6 6H2z" fill="currentColor" stroke="none"/>
+        <path class="wave" d="M10.5 5.5a3.6 3.6 0 010 5M12.4 4a6 6 0 010 8"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div id="hint" role="status"></div>
+<div id="announce" class="sr-only" aria-live="polite"></div>
+
+<!-- LEVEL 3 — immersive website viewer -->
+<div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Project website preview">
+  <div class="v-chrome">
+    <button id="vBack">← Back to the gallery</button>
+    <span class="v-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <div id="vUrl"></div>
+    <div class="v-dev" role="group" aria-label="Preview device">
+      <button id="devD" aria-pressed="true">Desktop</button>
+      <button id="devM" aria-pressed="false">Mobile</button>
+    </div>
+  </div>
+  <div class="v-stage"><div id="siteRoot" class="site" tabindex="0"></div></div>
+</div>
+
+<!-- Start a Project modal -->
+<div id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="m-back" data-close></div>
+  <div class="m-card">
+    <button class="m-x" data-close aria-label="Close">✕</button>
+    <div id="mFormWrap">
+      <div class="m-kick">Hope Pixel</div>
+      <h2 id="mTitle">Start a Project</h2>
+      <p class="m-sub">Tell Kate a little about your world. She'll reply within two working days.</p>
+      <form id="mForm" novalidate>
+        <div class="m-row">
+          <div class="m-field">
+            <label for="fName">Name</label>
+            <input id="fName" name="name" type="text" required autocomplete="name" placeholder="Your name" />
+          </div>
+          <div class="m-field">
+            <label for="fEmail">Email</label>
+            <input id="fEmail" name="email" type="email" required autocomplete="email" placeholder="you@studio.com" />
+          </div>
+        </div>
+        <div class="m-field">
+          <label for="fType">Project type</label>
+          <select id="fType" name="type">
+            <option>Website Design</option>
+            <option>UI-UX Design</option>
+            <option>Landing Page</option>
+            <option>Design System</option>
+            <option>Website Redesign</option>
+            <option>Something else</option>
+          </select>
+        </div>
+        <div class="m-field">
+          <label for="fMsg">Message</label>
+          <textarea id="fMsg" name="message" required placeholder="What are we making beautiful?"></textarea>
+        </div>
+        <button class="m-send" type="submit">Send it beautifully</button>
+      </form>
+    </div>
+    <div class="m-success" id="mSuccess" hidden>
+      <div class="m-check">✓</div>
+      <h3>Beautifully received.</h3>
+      <p>Thank you — your note is on Kate's desk. Expect a considered reply within two working days.</p>
+      <button class="m-done" data-close>Back to the gallery</button>
+    </div>
+  </div>
+</div>
+
+<!-- flat fallback (true phones / reduced motion / no 3D) -->
+<main id="flat">
+  <header class="f-hero">
+    <h1 class="grad-text">HOPE PIXEL</h1>
+    <div class="sub">The Atelier</div>
+    <p class="tag">Websites. Interfaces. Visual worlds.</p>
+    <p class="tag2">Elevated web design &amp; UI/UX — clean, cinematic, and easy to love.</p>
+  </header>
+  <section class="f-sec" aria-label="The atrium"><h2>The Atrium</h2><div id="fAtrium"></div></section>
+  <section class="f-sec" aria-label="Portfolio"><h2>The Portfolio Room</h2><div class="f-work-grid" id="fWork"></div></section>
+  <section class="f-cta">
+    <h2>Let's make you beautifully visible.</h2>
+    <p>Websites and interfaces, designed end-to-end by Kate.</p>
+    <button class="m-done" id="flatStart">Start a Project</button>
+  </section>
+  <footer class="f-foot">Designed &amp; built by <b>Hope Pixel</b> · Led by Kate</footer>
+</main>
+
+
+<script>
+"use strict";
+/* ══════════════════════════════════════════════════════════════════
+   HOPE PIXEL — THE ATELIER · script
+   [1] CONFIG (room, camera)  [2] DATA (copy — edit freely)
+   [3] Room builder           [4] Camera engine (5D: MOTION)
+   [5] Input — 3D house tour  [6] Stations & focus (5D: STORY)
+   [7] Level-3 site viewer    [8] Contact modal
+   [9] Mood & sound (LIGHT+SOUND)  [10] Flat fallback + init
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── [1] CONFIG ─ room geometry & camera feel ───────────────────── */
+const ROOM = { W:2400, H:1300, D:2600 };      // one gallery room (px)
+const R2Z  = -2600;                            // portfolio room z-offset
+const EYE  = -30;                              // camera eye height (y, - is up)
+const DOOR = { w:460, h:780 };                 // doorway in the shared wall
+// Station tour order (click empty space to advance)
+const TOUR = ["atrium","services","about","process","port-left","port-back","port-right"];
+// Camera poses per station. Focus poses are derived from frame positions.
+const POSES = {
+  // z:520 keeps the back wall filling ~90% of the view — further back the
+  // room reads as a floating diorama between dark side walls
+  "atrium":     () => ({ x:0, y:EYE, z:520,  yaw:0   }),
+  "services":   () => focusPose("services"),
+  "about":      () => focusPose("about"),
+  "process":    () => focusPose("process"),
+  "port-left":  () => ({ x:-ROOM.W/2 + portDist(), y:EYE, z:-2600, yaw:90  }),
+  "port-back":  () => ({ x:0, y:EYE, z:-3900 + portDist(), yaw:0 }),
+  "port-right": () => ({ x: ROOM.W/2 - portDist(), y:EYE, z:-2600, yaw:-90 }),
+};
+const STATION_LABEL = {
+  "atrium":"The Atrium", "services":"Services — west wall", "about":"About — the featured canvas",
+  "process":"Process — east wall", "port-left":"Portfolio — west wall",
+  "port-back":"Portfolio — north wall", "port-right":"Portfolio — east wall",
+};
+const STATION_FOCUS = { services:"services", about:"about", process:"process" };
+
+/* ── [2] DATA ─ all copy lives here ─────────────────────────────── */
+const PIECES = [
+  { id:"services", x:-1190, y:-60, z:-80,   ry:90,  w:470, h:580, art:"services",
+    kick:"Services", title:"Web Design · UI/UX",
+    body:"End-to-end web design for brands that care how it feels — UX strategy, interface design, and responsive builds that stay beautiful on every screen. One studio, from first sketch to final pixel.",
+    tags:["UX/UI","Web Design","Responsive","Design Systems"] },
+  { id:"about",    x:-700,  y:-60, z:-1290, ry:0,   w:470, h:580, art:"about",
+    kick:"About", title:"Led by Kate",
+    body:"Hope Pixel is led by Kate — a web & UI/UX designer crafting clean, cinematic sites that help brands become beautifully visible online. A small studio with deep care, and no templates.",
+    tags:["UI/UX","Web Design","Human-first"] },
+  { id:"process",  x:1190,  y:-60, z:-80,   ry:-90, w:470, h:580, art:"process",
+    kick:"Process", title:"Idea → Launch",
+    body:"Every project walks the same quiet path: we discover what your brand truly needs, design the world it should live in, create it pixel by pixel, then launch it into the light.",
+    tags:["01 Discover","02 Design","03 Create","04 Launch"] },
+];
+
+/* Six portfolio projects. Each `site` renders the full Level-3 website.
+   c = { bg, ink, accent, a2 (accent-2), card, muted, soft } */
+const PROJECTS = [
+  { id:"lumiere", num:"01", name:"Lumière", type:"E-commerce · UI/UX",
+    x:-1190, y:-50, z:-2200, ry:90, serif:true, dark:false, artType:"arch",
+    c:{ bg:"#f7f0e5", ink:"#29211a", accent:"#b3813f", a2:"#e0c186", card:"#fffaf1", muted:"#8a7a63", soft:"#efe3cd" },
+    domain:"lumiere-atelier.com",
+    site:{
+      logo:"Lumi<em>è</em>re", nav:["Collections","Lookbook","Journal","Atelier"],
+      kick:"Maison Lumière", heroTitle:"Objects of quiet luxury.",
+      heroSub:"Hand-finished homeware in small, numbered batches — cast, glazed and gilded in our atelier, then softly lit and sent to you.",
+      cta1:"Shop the collection", cta2:"Our story",
+      featH:"The Lumière way", featLede:"Fewer, better, slower — a shop built like a private gallery.",
+      feats:[
+        { t:"The Edit", d:"A rotating shelf of twelve objects — never more. When a piece sells through, it rests for a season." },
+        { t:"Provenance", d:"Every object is signed, numbered and traceable to the maker's bench it came from." },
+        { t:"The Gift Atelier", d:"Hand-wrapping, pressed cards and quiet delivery windows come as standard." } ],
+      workH:"New this season", workLede:"Four pieces from the winter edit.",
+      works:[
+        { t:"No. 04 — Candeleria", d:"Brass candelabra, warm-waxed" },
+        { t:"The Linen Study", d:"Table linens in six muted tones" },
+        { t:"Brass, warmed", d:"Hand-burnished serving set" },
+        { t:"The Winter Edit", d:"The full dozen, softly lit" } ],
+      quote:"It feels less like a shop and more like a room you're lucky to be in.",
+      qWho:"Élodie Marchand", qRole:"Founder, Maison Lumière",
+      ctaH:"The new collection arrives Friday.", ctaP:"Twelve objects. One quiet email. No noise after that.",
+      ctaBtn:"Join the list", ctaDone:"✓ You're on the list" } },
+
+  { id:"northwind", num:"02", name:"Northwind", type:"Travel · UX/UI",
+    x:-1190, y:-50, z:-3000, ry:90, serif:false, dark:false, artType:"arch",
+    c:{ bg:"#eef5fa", ink:"#12293c", accent:"#2f7fc0", a2:"#7fc0ea", card:"#ffffff", muted:"#5b7891", soft:"#dcebf5" },
+    domain:"northwind.travel",
+    site:{
+      logo:"North<em>wind</em>", nav:["Journeys","Guides","Field Notes","About"],
+      kick:"Northwind Journeys", heroTitle:"Go where the light goes.",
+      heroSub:"Small-group journeys along the Nordic edge — fjords, ice hotels and the midnight sun, at a pace that lets you actually see them.",
+      cta1:"Find your journey", cta2:"How we travel",
+      featH:"How we travel", featLede:"Slow routes, small groups, real guides.",
+      feats:[
+        { t:"Drawn by locals", d:"Routes mapped by the people who live on them — not by an algorithm chasing photo spots." },
+        { t:"Twelve travellers", d:"Never more. Enough for dinner conversation, few enough to disappear into a valley." },
+        { t:"One place, properly", d:"We stay longer and move less. The itinerary breathes, and so do you." } ],
+      workH:"This year's journeys", workLede:"Four seasons, four ways north.",
+      works:[
+        { t:"Lofoten, in winter", d:"Six days · aurora & sea eagles" },
+        { t:"The Ice Hotel", d:"Four days · carved rooms at −5°" },
+        { t:"Midnight Sun Ride", d:"Eight days · cycling at 1 a.m." },
+        { t:"Faroe Slow Week", d:"Seven days · one village, no plan" } ],
+      quote:"The first trip I've ever taken that felt designed rather than booked.",
+      qWho:"Jonas Bergström", qRole:"Traveller, Ice Hotel '25",
+      ctaH:"Summer routes are open.", ctaP:"Four journeys, forty-eight seats, one long season of light.",
+      ctaBtn:"Reserve a seat", ctaDone:"✓ Seat requested" } },
+
+  { id:"sok", num:"03", name:"Sōk", type:"Restaurant · Web Design",
+    x:-520, y:-50, z:-3890, ry:0, serif:true, dark:true, artType:"arch",
+    c:{ bg:"#171009", ink:"#f4e8d6", accent:"#d89a4e", a2:"#8a4b2a", card:"#221810", muted:"#a8927a", soft:"#2a1d12" },
+    domain:"sok.kitchen",
+    site:{
+      logo:"S<em>ō</em>k", nav:["The Counter","Menu","Fermentary","Visit"],
+      kick:"Seoul kitchen · northern soul", heroTitle:"A table in the half-light.",
+      heroSub:"Charcoal, ferment and quiet fire — a nine-course conversation between Seoul and the north, served to twelve seats a night.",
+      cta1:"Reserve a seat", cta2:"See the menu",
+      featH:"The room", featLede:"One counter, one fire, no menus on the wall.",
+      feats:[
+        { t:"The Counter", d:"Twelve seats around the open hearth. Every course finished within arm's reach of you." },
+        { t:"The Fermentary", d:"A cellar of jars — kimchi, jang and koji aged in-house, some older than the restaurant." },
+        { t:"Zero-menu Tuesdays", d:"The kitchen decides everything. You find out course by course." } ],
+      workH:"From the pass", workLede:"Four moments from this season's service.",
+      works:[
+        { t:"Course 03 — Ember leek", d:"Charred, glazed, rested in ash" },
+        { t:"The Fermentary", d:"Jars at year two" },
+        { t:"The Counter", d:"Service, 21:14" },
+        { t:"Late Service", d:"The last pour" } ],
+      quote:"Dinner as cinema. We didn't speak for the first three courses — we just watched.",
+      qWho:"Mirae Han", qRole:"Food writer, Table & Ash",
+      ctaH:"Two seatings, Thursday to Sunday.", ctaP:"18:00 and 21:00. Twelve seats each. The fire does the rest.",
+      ctaBtn:"Reserve a seat", ctaDone:"✓ Request sent" } },
+
+  { id:"fernwell", num:"04", name:"Fernwell", type:"SaaS · Product UI",
+    x:520, y:-50, z:-3890, ry:0, serif:false, dark:true, artType:"dash",
+    c:{ bg:"#0a1120", ink:"#e4ebfb", accent:"#3f7dff", a2:"#7fd0ff", card:"#101a30", muted:"#8ea4c8", soft:"#14213c" },
+    domain:"fernwell.app",
+    site:{
+      logo:"Fern<em>well</em>", nav:["Product","Boards","Pricing","Docs"],
+      kick:"Fernwell Analytics", heroTitle:"Clarity for growing teams.",
+      heroSub:"One calm dashboard for revenue, retention and runway — your whole company on a single quiet screen. No spreadsheets were harmed.",
+      cta1:"Create your board", cta2:"See the product",
+      featH:"Built for calm", featLede:"Numbers that explain themselves, and only speak when needed.",
+      feats:[
+        { t:"Live boards", d:"Revenue, retention and runway refresh as you breathe — no exports, no Monday scramble." },
+        { t:"Forecasts you can defend", d:"Every projection is modelled, sourced and explained in plain sentences." },
+        { t:"Alerts with manners", d:"Fernwell pings you only when a number actually changes your week." } ],
+      workH:"Four boards, no noise", workLede:"The screens your Monday meeting actually needs.",
+      works:[
+        { t:"Revenue board", d:"MRR, cohorts and momentum" },
+        { t:"Retention curves", d:"Who stays, and why" },
+        { t:"Runway view", d:"Months left, in honest ink" },
+        { t:"Team digests", d:"One calm email, Fridays" } ],
+      quote:"Our Monday metrics meeting is now twelve minutes long. Nobody misses the old one.",
+      qWho:"Priya Nair", qRole:"COO, Loom & Field",
+      ctaH:"Start free — first board in 4 minutes.", ctaP:"Connect your stack, pick a board, exhale.",
+      ctaBtn:"Start free", ctaDone:"✓ Board reserved" } },
+
+  { id:"marlowe", num:"05", name:"Marlowe", type:"Studio · UI + Art Direction",
+    x:1190, y:-50, z:-3000, ry:-90, serif:true, dark:true, artType:"arch",
+    c:{ bg:"#0e0e10", ink:"#f1efe9", accent:"#d6cdb8", a2:"#8f8875", card:"#17171a", muted:"#9b978d", soft:"#1c1c20" },
+    domain:"marlowe.studio",
+    site:{
+      logo:"MAR<em>LOWE</em>", nav:["Identity","Editorial","Direction","Index"],
+      kick:"Marlowe — est. 2019", heroTitle:"We make brands articulate.",
+      heroSub:"Identity, editorial and art direction for people with something to say — and the restraint to say it once, precisely.",
+      cta1:"See the index", cta2:"What we do",
+      featH:"Three disciplines", featLede:"Everything we make is a sentence in your voice.",
+      feats:[
+        { t:"Identity", d:"Voices, not logos. Naming, wordmarks and systems that survive their launch decks." },
+        { t:"Editorial", d:"Print-grade typography, brought to screens without losing its manners." },
+        { t:"Direction", d:"Campaigns and imagery where every pixel stays on message." } ],
+      workH:"Selected index", workLede:"Four projects, four sentences.",
+      works:[
+        { t:"Aster & Co — rebrand", d:"A florist, spoken in serif" },
+        { t:"Field Notes — journal", d:"A quarterly, set like a novel" },
+        { t:"Kin — campaign", d:"Family banking, said plainly" },
+        { t:"Vell — packaging", d:"Skincare with its voice down" } ],
+      quote:"They edited us down to the one sentence that mattered — then built everything from it.",
+      qWho:"Tomas Vell", qRole:"Founder, Vell",
+      ctaH:"Booking autumn projects now.", ctaP:"Two slots. Considered work takes room on the calendar.",
+      ctaBtn:"Start a conversation", ctaDone:"✓ We'll be in touch" } },
+
+  { id:"bloom", num:"06", name:"Bloom", type:"Wellness · Mobile UI",
+    x:1190, y:-50, z:-2200, ry:-90, serif:false, dark:false, artType:"phone",
+    c:{ bg:"#eef2e9", ink:"#23301f", accent:"#6f9a58", a2:"#a7c294", card:"#f8faf5", muted:"#6b7a63", soft:"#dfe8d7" },
+    domain:"bloom.day",
+    site:{
+      logo:"bl<em>oo</em>m", nav:["Practice","Library","Moods","Support"],
+      kick:"Bloom — your gentlest habit", heroTitle:"Softer days, by design.",
+      heroSub:"A five-minute daily practice — breath, movement and rest, in your pocket. Made to be put down, not doom-scrolled.",
+      cta1:"Download Bloom", cta2:"See the practice",
+      featH:"A kinder loop", featLede:"Designed with sleep scientists and one very calm illustrator.",
+      feats:[
+        { t:"Morning bloom", d:"Five minutes of breath before the phone wins. It opens before your inbox does." },
+        { t:"Moods, mapped gently", d:"Patterns without judgement — soft charts, no streaks shaming you." },
+        { t:"Evening wind-down", d:"Screens dim, shoulders drop. The app closes itself when you're done." } ],
+      workH:"Inside the practice", workLede:"Four rooms of the app, kept deliberately small.",
+      works:[
+        { t:"Breath 4-7-8", d:"The classic, beautifully counted" },
+        { t:"The Rest Library", d:"Naps, rain and long stories" },
+        { t:"Streaks, softened", d:"Progress that forgives a Tuesday" },
+        { t:"Night mode", d:"Amber light, lower voice" } ],
+      quote:"The only app that has ever told me to put it down — and meant it.",
+      qWho:"Ana Reyes", qRole:"Bloom member, year two",
+      ctaH:"Begin tonight — free for 30 days.", ctaP:"Five minutes. One breath. No credit card.",
+      ctaBtn:"Start free", ctaDone:"✓ Sent to your phone" } },
+];
+</script>
+
+
+<script>
+"use strict";
+/* ── [3] ROOM BUILDER ─ walls, frames, portal, reflections ──────── */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const world = $("#world"), stage = $("#stage");
+const clamp = (v,a,b) => Math.min(b, Math.max(a,v));
+
+function el(tag, cls, html){
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (html != null) n.innerHTML = html;
+  return n;
+}
+/* a plane centred on the world origin, then transformed into place.
+   rs = raster scale: the element is laid out at 1/rs size and enlarged with
+   scale(rs), so its GPU texture is rs² times smaller. Use rs=2..3 for big
+   soft surfaces (walls, floors, sky) — full-res textures for every plane
+   blow past GPU memory on real machines and the compositor starts dropping
+   or flattening layers (walls turn see-through, rotations get lost). */
+function plane(cls, w, h, transform, html, rs = 1){
+  const p = el("div", "plane " + cls, html);
+  const lw = w/rs, lh = h/rs;
+  p.style.cssText = `width:${lw}px;height:${lh}px;left:${-lw/2}px;top:${-lh/2}px;` +
+    `transform:${transform}${rs !== 1 ? ` scale(${rs})` : ""};`;
+  return p;
+}
+const T = (x,y,z,rot="") => `translate3d(${x}px,${y}px,${z}px) ${rot}`;
+const { W, H, D } = ROOM, HW = W/2, HH = H/2, HD = D/2;
+
+/* light pools painted onto each floor (world → floor-local coords).
+   Entries: [x, z, w, h, alpha, "r,g,b"] — cool periwinkle by default,
+   warm champagne under the sconces, pale blue under the open sky. */
+function floorPools(zc, spots, rs = 1){
+  return spots.map(([x, z, w=340, h=190, a=.10, c="212,206,255"]) =>
+    `radial-gradient(${w/rs}px ${h/rs}px at ${(x + HW)/rs}px ${(z - zc + HD)/rs}px, rgba(${c},${a}), transparent 70%)`
+  ).join(",");
+}
+const WARM = "255,214,150", MOON = "186,205,255";
+function buildRoom(zc, isPortfolio){
+  // planes are slightly OVERSIZED (+10/+8) so edges overlap instead of
+  // leaving hairline AA gaps that flicker while the camera moves
+  const fl = plane("floor", W + 10, D + 10, T(0, HH, zc, "rotateX(90deg)"));
+  const pools = isPortfolio
+    ? [[-1200,-2200],[-1200,-3000],[-520,-3880],[520,-3880],[1200,-3000],[1200,-2200],[0,-1330,420,240,.12],
+       [0,-2600,1150,660,.05,MOON],
+       [-1200,-1700,240,140,.07,WARM],[-1200,-2600,240,140,.07,WARM],[-1200,-3500,240,140,.07,WARM],
+       [1200,-1700,240,140,.07,WARM],[1200,-2600,240,140,.07,WARM],[1200,-3500,240,140,.07,WARM],
+       [0,-3880,220,130,.06,WARM],[-1050,-3880,220,130,.06,WARM],[1050,-3880,220,130,.06,WARM]]
+    : [[-1200,-80],[-700,-1280],[1200,-80],[0,-1290,420,240,.14],
+       [0,60,1150,660,.05,MOON],
+       [-1200,620,240,140,.07,WARM],[-1200,-780,240,140,.07,WARM],
+       [1200,620,240,140,.07,WARM],[1200,-780,240,140,.07,WARM],
+       [-320,-1290,220,130,.06,WARM],[320,-1290,220,130,.06,WARM],
+       [-620,1290,220,130,.06,WARM],[620,1290,220,130,.06,WARM]];
+  fl.style.background = floorPools(zc, pools) +
+    `,repeating-linear-gradient(90deg, rgba(200,210,255,.028) 0 2px, transparent 2px 236px)` +
+    `,linear-gradient(180deg, var(--fla), var(--flb) 55%, var(--fla))`;
+  world.append(fl);
+  // NO ceiling — the atelier is open to the night sky
+  // side walls
+  world.append(plane("wall", D + 10, H + 8, T(-HW, 0, zc, "rotateY(90deg)")));
+  world.append(plane("wall", D + 10, H + 8, T( HW, 0, zc, "rotateY(-90deg)")));
+  if (isPortfolio){
+    world.append(plane("wall", W + 10, H + 8, T(0, 0, zc - HD)));      // far wall
+    doorwayWall(zc + HD, 180);                                          // wall back to atrium
+  }
+}
+/* the shared wall with the glowing doorway, built from three segments */
+function doorwayWall(z, ry){
+  const segW = (W - DOOR.w) / 2, segX = (DOOR.w + segW) / 2;
+  const rot = ry ? `rotateY(${ry}deg)` : "";
+  world.append(plane("wall", segW, H + 8, T(-segX, 0, z, rot)));
+  world.append(plane("wall", segW, H + 8, T( segX, 0, z, rot)));
+  // lintel strip above the door opening, centred between door top and ceiling
+  world.append(plane("wall lint", DOOR.w, H - DOOR.h, T(0, -(HH - (H - DOOR.h)/2), z, rot)));
+}
+
+/* frames -------------------------------------------------------- */
+function tagsHTML(tags){ return tags.map(t => `<span>${t}</span>`).join(""); }
+function artHTML(kind){
+  if (kind === "services") return `<span class="frame-art art-services"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="cursor"></i></span>`;
+  if (kind === "process")  return `<span class="frame-art art-process"><i class="beam"></i><span class="node n1">01</span><span class="node n2">02</span><span class="node n3">03</span><span class="node n4">04</span></span>`;
+  return `<span class="frame-art art-about"><span class="arch"><i class="sun"></i></span><span class="k">K.</span></span>`;
+}
+function thumbHTML(p){
+  const s = p.site;
+  return `<span class="thumb ${p.serif ? "serif" : ""} ${p.dark ? "darkish" : ""}"
+    style="--sb:${p.c.bg};--si:${p.c.ink};--sa:${p.c.accent};--sa2:${p.c.a2};--sc:${p.c.card};--sd:${p.c.soft}">
+    <span class="t-bar"><span class="t-dots"><i></i><i></i><i></i></span><span class="t-url">${p.domain}</span></span>
+    <span class="t-hero"><span class="t-kick">${s.kick}</span><span class="t-title">${s.heroTitle}</span>
+      <span class="t-btns"><i></i><i></i></span></span>
+    <span class="t-cards"><i></i><i></i><i></i></span>
+  </span>`;
+}
+function addReflection(f, x, y, z, ry, w, h, inner){
+  const r = el("div", "reflection", `<div class="rin">${inner}</div>`);
+  r.setAttribute("aria-hidden","true");
+  r.style.cssText = `position:absolute;width:${w}px;height:${h}px;left:${-w/2}px;top:${-h/2}px;` +
+    `transform:${T(x, H - y, z, `rotateY(${ry}deg) scaleY(-1)`)};`;
+  world.append(r);
+}
+function buildFrames(){
+  // atrium pieces (one per wall — rule 1)
+  PIECES.forEach(p => {
+    const f = el("button", "frame");
+    f.dataset.piece = p.id;
+    f.setAttribute("aria-label", `${p.kick} — ${p.title}`);
+    f.style.cssText = `width:${p.w}px;height:${p.h}px;left:${-p.w/2}px;top:${-p.h/2}px;transform:${T(p.x,p.y,p.z,`rotateY(${p.ry}deg)`)};`;
+    f.innerHTML = `<span class="frame-halo"></span><span class="frame-light"></span><span class="frame-lamp"></span>
+      <span class="frame-mat">${artHTML(p.art)}<span class="lampglow"></span>
+        <span class="frame-info"><span class="fi-kick">${p.kick}</span>
+          <span class="fi-title">${p.title}</span>
+          <span class="fi-body">${p.body}</span>
+          <span class="fi-tags">${tagsHTML(p.tags)}</span></span>
+      </span>`;
+    world.append(f);
+    addReflection(f, p.x, p.y, p.z, p.ry, p.w, p.h, `<div class="frame-mat">${artHTML(p.art)}</div>`);
+  });
+  // gilded manifesto plaque, balancing the doorway (non-interactive)
+  const pl = plane("plaque-static", 400, 260, T(700, -80, -HD + 10),
+    `<span class="rule"></span><b>Websites. Interfaces.<br>Visual worlds.</b><span>Hope Pixel · The Atelier</span><span class="rule"></span>`);
+  world.append(pl);
+  // portfolio works — spread across three walls, two per wall, wide apart
+  PROJECTS.forEach(p => {
+    const w = 560, h = 470;
+    const f = el("button", "frame pframe");
+    f.dataset.project = p.id;
+    f.setAttribute("aria-label", `${p.num} · ${p.name} — ${p.type}. Open the website.`);
+    f.style.cssText = `width:${w}px;height:${h}px;left:${-w/2}px;top:${-h/2}px;transform:${T(p.x,p.y,p.z,`rotateY(${p.ry}deg)`)};`;
+    f.innerHTML = `<span class="frame-halo"></span><span class="frame-light"></span><span class="frame-lamp"></span>
+      <span class="frame-mat">${thumbHTML(p)}<span class="lampglow"></span>
+        <span class="placard"><i>${p.num}</i><b>${p.name}</b><span>${p.type}</span></span>
+      </span>`;
+    world.append(f);
+    addReflection(f, p.x, p.y, p.z, p.ry, w, h, `<div class="frame-mat">${thumbHTML(p)}</div>`);
+    p.w = w; p.h = h;
+  });
+}
+function buildPortal(){
+  // glowing veil standing in the doorway (clickable from both rooms)
+  const v = el("button", "portal-veil");
+  v.id = "portal";
+  v.setAttribute("aria-label","Doorway to the portfolio room");
+  const vw2 = DOOR.w - 40, vh2 = DOOR.h - 24;
+  v.style.cssText = `position:absolute;width:${vw2}px;height:${vh2}px;left:${-vw2/2}px;top:${-vh2/2}px;` +
+    `transform:${T(0, HH - vh2/2, -HD + 2)};`;
+  v.innerHTML = `<span class="pulse"></span>`;
+  world.append(v);
+  // engraved labels above the opening — one for each room
+  world.append(plane("door-label", DOOR.w + 200, 90, T(0, -(HH - (H - DOOR.h)/2), -HD + 12), "Portfolio →"));
+  world.append(plane("door-label", DOOR.w + 200, 90, T(0, -(HH - (H - DOOR.h)/2), -HD - 12, "rotateY(180deg)"), "← The Atrium"));
+  // light spilling from the doorway onto the atrium floor is baked into the floor pools
+}
+function buildSky(){
+  // one starlit plane high above both roofless rooms. IMPORTANT: keep the
+  // LAYOUT size modest and enlarge with scale() — a physically huge plane
+  // (e.g. 9000×10000) rasterizes at full size and hangs the GPU. The scale
+  // blur is invisible in a night sky.
+  world.append(plane("sky", 3000, 3200, T(0, -1800, -1300, "rotateX(-90deg) scale(2)")));
+}
+function buildSconces(){
+  const S = [];
+  [620, -780].forEach(z => {                                   // atrium side walls
+    S.push(T(-HW + 16, -80, z, "rotateY(90deg)"));
+    S.push(T( HW - 16, -80, z, "rotateY(-90deg)"));
+  });
+  [-320, 320].forEach(x => S.push(T(x, -80, -HD + 16)));       // flanking the doorway
+  [-620, 620].forEach(x => S.push(T(x, -80, HD - 16, "rotateY(180deg)")));
+  [-1700, -2600, -3500].forEach(z => {                         // portfolio side walls
+    S.push(T(-HW + 16, -80, z, "rotateY(90deg)"));
+    S.push(T( HW - 16, -80, z, "rotateY(-90deg)"));
+  });
+  [-1050, 0, 1050].forEach(x => S.push(T(x, -80, -3900 + 16)));
+  [-320, 320].forEach(x => S.push(T(x, -80, -1300 - 16, "rotateY(180deg)")));
+  S.forEach(t => world.append(plane("sconce", 120, 640, t, "<i></i>")));
+}
+function buildMotes(){
+  const m = $("#motes");
+  for (let i = 0; i < 16; i++){
+    const d = el("i");
+    const s = 2 + Math.random() * 3.4;
+    d.style.cssText = `left:${Math.random()*100}%;top:${30+Math.random()*70}%;width:${s}px;height:${s}px;` +
+      `--mx:${(Math.random()*120-60).toFixed(0)}px;animation-duration:${(9+Math.random()*14).toFixed(1)}s;` +
+      `animation-delay:${(-Math.random()*20).toFixed(1)}s;`;
+    m.append(d);
+  }
+}
+function buildDots(){
+  const dots = $("#dots");
+  [["atrium","Atrium"],["services","Services"],["about","About"],["process","Process"],["port-left","Portfolio"]]
+    .forEach(([id,label]) => {
+      const b = el("button", null, `<i></i><span>${label}</span>`);
+      b.dataset.station = id;
+      b.setAttribute("aria-label", `Walk to ${label}`);
+      dots.append(b);
+    });
+}
+function buildWorld(){
+  buildRoom(0, false);
+  doorwayWall(-HD, 0);
+  world.append(plane("wall", W + 10, H + 8, T(0, 0, HD, "rotateY(180deg)")));  // wall behind you
+  buildRoom(R2Z, true);
+  buildSky();
+  buildSconces();
+  buildFrames();
+  buildPortal();
+  buildMotes();
+  buildDots();
+}
+</script>
+
+
+<script>
+"use strict";
+/* ── [4] CAMERA ENGINE ─ a gliding 3D house-tour camera ─────────── */
+let P = 1000;                                   // perspective, adapts to width
+const cam  = { x:0, y:EYE, z:1160, yaw:0 };     // where you stand
+const look = { yaw:0, pitch:0, tYaw:0, tPitch:0 };  // drag-look offsets
+let queue = [];                                 // walk legs (tweened in order)
+let station = "atrium", focused = null;
+let pendingFocus = null, pendingOpen = null;
+let dragging = false, started = false;
+let walkAmp = 0, idleAmp = 0, wasWalking = false;   // eased motion amplitudes
+
+const ease = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2;
+const shortest = (a,b) => ((b - a + 540) % 360) - 180;
+const roomOf = z => z > -HD ? 1 : 2;
+
+function focusDist(w,h,mul=1){
+  return Math.max(h*P/(innerHeight*.62), w*P/(innerWidth*.55), 520) * mul;
+}
+function portDist(){ return clamp(1600*P/(innerWidth*.94), 860, 1500); }
+function pieceById(id){ return PIECES.find(p => p.id === id) || PROJECTS.find(p => p.id === id); }
+function focusPose(id, mul=1){
+  const p = pieceById(id), rad = p.ry*Math.PI/180;
+  const d = focusDist(p.w || 470, p.h || 580, mul);
+  return { x:p.x + Math.sin(rad)*d, y:EYE, z:p.z + Math.cos(rad)*d, yaw:p.ry };
+}
+/* build the walk: crossing rooms routes the camera through the doorway.
+   Waypoints the camera is already past are skipped, so interrupting a
+   crossing mid-door never makes it double back through the wall. */
+function legsTo(target){
+  const legs = [];
+  if (roomOf(cam.z) !== roomOf(target.z)){
+    const entering = target.z < cam.z;
+    const yawT = entering ? 0 : 180;
+    (entering ? [-880, -1720] : [-1720, -880]).forEach(z => {
+      const passed = entering ? cam.z <= z + 60 : cam.z >= z - 60;
+      if (!passed) legs.push({ x:0, y:EYE, z, yaw:yawT });
+    });
+  }
+  legs.push({ x:target.x, y:target.y, z:target.z, yaw:target.yaw });
+  return legs;
+}
+function tick(now){
+  if (queue.length){
+    const leg = queue[0];
+    if (leg.t0 == null){
+      leg.t0 = now;
+      leg.from = { x:cam.x, y:cam.y, z:cam.z, yaw:cam.yaw };
+      leg.yawTo = leg.from.yaw + shortest(leg.from.yaw, leg.yaw);
+      const dist = Math.hypot(leg.x - leg.from.x, leg.z - leg.from.z);
+      leg.dur = clamp(dist*.72, 520, 1700) + Math.abs(leg.yawTo - leg.from.yaw)*3.2;
+    }
+    const k = clamp((now - leg.t0)/leg.dur, 0, 1), e = ease(k);
+    cam.x = leg.from.x + (leg.x - leg.from.x)*e;
+    cam.y = leg.from.y + (leg.y - leg.from.y)*e;
+    cam.z = leg.from.z + (leg.z - leg.from.z)*e;
+    cam.yaw = leg.from.yaw + (leg.yawTo - leg.from.yaw)*e;
+    if (k >= 1){ queue.shift(); if (!queue.length) onArrive(); }
+  }
+  look.yaw   += (look.tYaw   - look.yaw)*.14;
+  look.pitch += (look.tPitch - look.pitch)*.14;
+  // bob & idle-sway fade in/out smoothly — snapping them on/off reads as a jolt
+  const walking = queue.length > 0;
+  if (walking !== wasWalking){
+    wasWalking = walking;
+    document.body.classList.toggle("walking", walking);
+  }
+  walkAmp += ((walking ? 1 : 0) - walkAmp)*.06;
+  // sway pauses while reading a focused piece — swimming text reads as a glitch
+  idleAmp += (((walking || dragging || focused) ? 0 : 1) - idleAmp)*.04;
+  const idle = Math.sin(now/5600)*.9*idleAmp;    // gentle breath at rest
+  const bob  = Math.sin(now/300)*2.4*walkAmp;    // soft footsteps in transit
+  world.style.transform =
+    `translateZ(${P}px) rotateX(${look.pitch.toFixed(3)}deg)` +
+    ` rotateY(${(-(cam.yaw + look.yaw + idle)).toFixed(3)}deg)` +
+    ` translate3d(${(-cam.x).toFixed(2)}px,${(-(cam.y + bob)).toFixed(2)}px,${(-cam.z).toFixed(2)}px)`;
+  requestAnimationFrame(tick);
+}
+
+/* ── [6] STATIONS & FOCUS ───────────────────────────────────────── */
+function goStation(id, opts = {}){
+  station = id;
+  pendingFocus = "focus" in opts ? opts.focus : (STATION_FOCUS[id] || null);
+  pendingOpen = opts.open || null;
+  setFocused(null);
+  const pose = POSES[id]();
+  if (opts.instant){
+    queue = [];
+    Object.assign(cam, pose, { yaw: cam.yaw + shortest(cam.yaw, pose.yaw) });
+    onArrive();
+  } else queue = legsTo(pose);
+  syncUI();
+}
+function openProject(id){
+  const p = PROJECTS.find(x => x.id === id);
+  station = stationForProject(p);
+  pendingFocus = null; pendingOpen = id;
+  setFocused(null);
+  queue = legsTo(focusPose(id, .85));
+  syncUI();
+}
+function stationForProject(p){ return p.ry === 90 ? "port-left" : p.ry === 0 ? "port-back" : "port-right"; }
+function nextStation(dir){
+  const i = TOUR.indexOf(station);
+  goStation(TOUR[(i + dir + TOUR.length) % TOUR.length]);
+}
+function onArrive(){
+  if (pendingFocus){ setFocused(pendingFocus); pendingFocus = null; }
+  if (pendingOpen){ const id = pendingOpen; pendingOpen = null; openViewer(id); }
+  chime();
+  announce(STATION_LABEL[station] || "");
+  if (!hinted2 && station.startsWith("port")){
+    hinted2 = true;
+    showHint("Click a frame to <b>step inside the site</b>", 5600);
+  }
+}
+function setFocused(id){
+  focused = id;
+  const inR1 = !!id && PIECES.some(p => p.id === id);
+  $$("button.frame").forEach(f => {
+    const fid = f.dataset.piece || f.dataset.project;
+    const fR1 = !!f.dataset.piece;
+    f.classList.toggle("focused", fid === id);
+    f.classList.toggle("dimmed", !!id && fid !== id && fR1 === inR1);
+  });
+  $("#portal").classList.toggle("dimmed", !!id && inR1);
+  syncUI();
+}
+function syncUI(){
+  const dotId = station.startsWith("port") ? "port-left" : station;
+  $$("#dots button").forEach(b => b.setAttribute("aria-current", b.dataset.station === dotId ? "true" : "false"));
+  const navId = station.startsWith("port") ? "work" : station;
+  $$("#navlinks button").forEach(b => b.setAttribute("aria-current", b.dataset.nav === navId ? "true" : "false"));
+  $("#backCue").dataset.idle = (station === "atrium" && !focused) ? "1" : "0";
+}
+function announce(t){ $("#announce").textContent = t; }
+let hintTimer, navUsed = false, hinted2 = false;
+function showHint(html, ms = 6500){
+  const h = $("#hint");
+  h.innerHTML = html; h.classList.add("on");
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => h.classList.remove("on"), ms);
+}
+function markNavUsed(){ if (!navUsed){ navUsed = true; $("#hint").classList.remove("on"); } }
+
+/* ── [5] INPUT ─ click to walk · drag to look · swipe to jump ───── */
+let pd = null, suppressClick = false;
+stage.addEventListener("pointerdown", e => {
+  if (e.button !== 0) return;
+  pd = { x:e.clientX, y:e.clientY, t:performance.now(),
+         baseYaw:look.tYaw, basePitch:look.tPitch, moved:false };
+});
+window.addEventListener("pointermove", e => {
+  if (!pd) return;
+  const dx = e.clientX - pd.x, dy = e.clientY - pd.y;
+  if (!pd.moved && Math.hypot(dx, dy) > 7){
+    pd.moved = true; dragging = true; stage.classList.add("dragging");
+  }
+  if (pd.moved){
+    look.tYaw   = clamp(pd.baseYaw   + dx*.055, -34, 34);
+    look.tPitch = clamp(pd.basePitch + dy*.035, -13, 13);
+  }
+});
+window.addEventListener("pointerup", e => {
+  if (!pd) return;
+  const dx = e.clientX - pd.x, dy = e.clientY - pd.y, dt = performance.now() - pd.t;
+  const swipe = pd.moved && dt < 420 && Math.abs(dx) > 130 && Math.abs(dx) > Math.abs(dy)*2.2;
+  if (pd.moved){ suppressClick = true; setTimeout(() => suppressClick = false, 120); }
+  dragging = false; stage.classList.remove("dragging");
+  look.tYaw = 0; look.tPitch = 0;             // ease back on release
+  if (swipe){ nextStation(dx < 0 ? 1 : -1); markNavUsed(); }
+  pd = null;
+});
+stage.addEventListener("click", e => {
+  if (suppressClick){ suppressClick = false; return; }
+  const f = e.target.closest("button.frame");
+  markNavUsed();
+  if (f){
+    if (f.dataset.piece) goStation(f.dataset.piece);
+    else openProject(f.dataset.project);
+    return;
+  }
+  if (e.target.closest("#portal")){
+    goStation(roomOf(cam.z) === 1 ? "port-left" : "atrium");
+    return;
+  }
+  nextStation(1);                              // click empty space → next wall
+});
+/* keyboard: arrows tour the walls, ESC steps back out, Tab reaches frames */
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape"){
+    if (!$("#modal").hidden) closeModal();
+    else if (!$("#viewer").hidden) closeViewer();
+    else if (!document.body.classList.contains("flat") && (station !== "atrium" || focused)) goStation("atrium");
+    return;
+  }
+  if (!$("#viewer").hidden || !$("#modal").hidden || document.body.classList.contains("flat")) return;
+  if (/input|textarea|select/i.test(e.target.tagName)) return;
+  if (e.key === "ArrowRight"){ nextStation(1); markNavUsed(); }
+  if (e.key === "ArrowLeft"){ nextStation(-1); markNavUsed(); }
+});
+/* tabbing to a frame walks the camera to it (and never scrolls the stage) */
+stage.addEventListener("focusin", e => {
+  stage.scrollLeft = 0; stage.scrollTop = 0;
+  const f = e.target.closest("button.frame");
+  if (!f || !f.matches(":focus-visible")) return;
+  if (f.dataset.piece){ if (focused !== f.dataset.piece) goStation(f.dataset.piece); }
+  else {
+    const st = stationForProject(PROJECTS.find(x => x.id === f.dataset.project));
+    if (station !== st) goStation(st);
+  }
+});
+function layout(){
+  P = clamp(innerWidth/1.44, 760, 1300);
+  stage.style.perspective = P + "px";
+  const flat = matchMedia("(max-width:719px)").matches
+    || matchMedia("(max-height:439px)").matches
+    || matchMedia("(prefers-reduced-motion: reduce)").matches
+    || !CSS.supports("transform-style","preserve-3d");
+  document.body.classList.toggle("flat", flat);
+  if (!flat && started && !queue.length){
+    const pose = POSES[station]();             // re-centre for the new viewport
+    Object.assign(cam, pose, { yaw: cam.yaw + shortest(cam.yaw, pose.yaw) });
+  }
+}
+let rsT; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(layout, 140); });
+// media-query listeners fire even when a resize event is missed (and when
+// the user toggles OS reduced-motion mid-session)
+["(max-width:719px)", "(max-height:439px)", "(prefers-reduced-motion: reduce)"]
+  .forEach(q => matchMedia(q).addEventListener("change", layout));
+</script>
+
+
+<script>
+"use strict";
+/* ── [7] LEVEL-3 VIEWER ─ step inside the actual websites ───────── */
+const viewer = $("#viewer"), siteRoot = $("#siteRoot");
+let lastProject = null, mobileView = false, vCloseT = null;
+
+function buildSite(p){
+  const s = p.site, c = p.c;
+  siteRoot.className = "site" + (p.serif ? " serif" : "") + (p.dark ? " darkish" : "");
+  siteRoot.style.cssText = `--sb:${c.bg};--si:${c.ink};--sa:${c.accent};--sa2:${c.a2};--sc:${c.card};--sm:${c.muted};--sd:${c.soft}`;
+  const secs = ["feat","work","voice","cta"];
+  const links = s.nav.map((l,i) => `<button data-go="${secs[i]}">${l}</button>`).join("");
+  const feats = s.feats.map(f => `<div class="s-card"><div class="dot"></div><h3>${f.t}</h3><p>${f.d}</p></div>`).join("");
+  const works = s.works.map(w => `<button class="s-tile"><span class="art"></span><span class="tx"><b>${w.t}</b><span>${w.d}</span></span></button>`).join("");
+  const art = p.artType === "dash"
+    ? `<div class="h-art h-dash"><div class="pane"><div class="row r1"></div><div class="row r2"></div><div class="row r3"></div><div class="row r4"></div><div class="spark"></div></div></div>`
+    : p.artType === "phone"
+    ? `<div class="h-art h-phone"><div class="pane"><div class="ring"></div><div class="line l1"></div><div class="line l2"></div></div></div>`
+    : `<div class="h-art h-arch"><div class="pane"></div></div>`;
+  siteRoot.innerHTML = `
+    <nav class="s-nav"><div class="s-logo">${s.logo}</div><div class="s-links">${links}</div>
+      <button class="s-btn small" data-go="cta">${s.ctaBtn}</button></nav>
+    <header class="s-hero" data-sec="top"><div>
+      <div class="s-kick">${s.kick}</div><h1>${s.heroTitle}</h1><p class="s-sub">${s.heroSub}</p>
+      <div class="s-heroBtns"><button class="s-btn" data-go="work">${s.cta1}</button>
+        <button class="s-btn ghost" data-go="feat">${s.cta2}</button></div></div>${art}</header>
+    <section class="s-sec" data-sec="feat"><h2 class="s-h2">${s.featH}</h2>
+      <p class="s-lede">${s.featLede}</p><div class="s-cards">${feats}</div></section>
+    <section class="s-sec tint" data-sec="work"><h2 class="s-h2">${s.workH}</h2>
+      <p class="s-lede">${s.workLede}</p><div class="s-work">${works}</div></section>
+    <section class="s-quote" data-sec="voice"><p class="q-text">${s.quote}</p>
+      <p class="q-who"><b>${s.qWho}</b> · ${s.qRole}</p></section>
+    <section class="s-cta" data-sec="cta"><h2>${s.ctaH}</h2><p>${s.ctaP}</p>
+      <button class="s-btn" data-cta-done="${s.ctaDone}">${s.ctaBtn}</button></section>
+    <footer class="s-foot"><div class="s-logo">${s.logo}</div><span>© 2026 ${p.name}</span>
+      <span class="cred">Designed by <b>Hope Pixel</b></span></footer>`;
+  $("#vUrl").innerHTML = `🔒&nbsp; <b>${p.domain}</b>`;
+}
+/* the mockups are workable: nav & buttons smooth-scroll their sections */
+siteRoot.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]");
+  if (go){
+    const sec = siteRoot.querySelector(`[data-sec="${go.dataset.go}"]`);
+    if (sec){
+      const top = sec.getBoundingClientRect().top - siteRoot.getBoundingClientRect().top + siteRoot.scrollTop - 66;
+      siteRoot.scrollTo({ top: Math.max(0, top), behavior:"smooth" });
+    }
+    return;
+  }
+  const cta = e.target.closest("[data-cta-done]");
+  if (cta){ cta.textContent = cta.dataset.ctaDone; cta.style.pointerEvents = "none"; cta.style.opacity = ".78"; }
+});
+function openViewer(id){
+  const p = PROJECTS.find(x => x.id === id);
+  lastProject = p;
+  clearTimeout(vCloseT);            // reopening during a close fade is safe
+  buildSite(p);
+  applyNarrow();
+  viewer.hidden = false;
+  requestAnimationFrame(() => viewer.classList.add("on"));
+  siteRoot.scrollTop = 0;
+  siteRoot.focus({ preventScroll:true });
+  announce(`${p.name} — ${p.type}. Website preview open. Escape returns to the gallery.`);
+}
+function closeViewer(){
+  if (viewer.hidden) return;
+  viewer.classList.remove("on");
+  clearTimeout(vCloseT);
+  vCloseT = setTimeout(() => { viewer.hidden = true; }, 460);
+  if (!document.body.classList.contains("flat") && lastProject) goStation(stationForProject(lastProject));
+  announce("Back in the gallery.");
+}
+function setDevice(m){
+  mobileView = m;
+  viewer.classList.toggle("mobile", m);
+  $("#devD").setAttribute("aria-pressed", String(!m));
+  $("#devM").setAttribute("aria-pressed", String(m));
+  applyNarrow();
+}
+function applyNarrow(){ siteRoot.classList.toggle("narrow", mobileView || innerWidth < 760); }
+$("#vBack").onclick = closeViewer;
+$("#devD").onclick = () => setDevice(false);
+$("#devM").onclick = () => setDevice(true);
+window.addEventListener("resize", applyNarrow);
+
+/* ── [8] CONTACT MODAL ──────────────────────────────────────────── */
+const modal = $("#modal");
+let lastFocusEl = null;
+function openModal(){
+  modal.hidden = false;
+  $("#mFormWrap").hidden = false;
+  $("#mSuccess").hidden = true;
+  lastFocusEl = document.activeElement;
+  setTimeout(() => $("#fName").focus(), 40);
+}
+function closeModal(){
+  modal.hidden = true;
+  if (lastFocusEl && lastFocusEl.focus) lastFocusEl.focus();
+}
+modal.addEventListener("click", e => { if (e.target.closest("[data-close]")) closeModal(); });
+$("#mForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if (!e.target.reportValidity()) return;
+  $("#mFormWrap").hidden = true;
+  $("#mSuccess").hidden = false;
+  e.target.reset();
+  announce("Message sent — beautifully received.");
+});
+$("#startBtn").onclick = openModal;
+
+/* ── [9] MOOD & SOUND ───────────────────────────────────────────── */
+$$("#moodSeg button").forEach(b => b.onclick = () => setMood(b.dataset.mood));
+function setMood(m){
+  document.body.dataset.mood = m;
+  $$("#moodSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mood === m)));
+  announce("Room mood: " + m);
+}
+let AC = null, ambGain = null, soundOn = false;
+function ensureAudio(){
+  if (AC) return;
+  AC = new (window.AudioContext || window.webkitAudioContext)();
+  ambGain = AC.createGain(); ambGain.gain.value = 0; ambGain.connect(AC.destination);
+  const len = 2*AC.sampleRate, buf = AC.createBuffer(1, len, AC.sampleRate), d0 = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d0[i] = Math.random()*2 - 1;
+  const noise = AC.createBufferSource(); noise.buffer = buf; noise.loop = true;
+  const lp = AC.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 220; lp.Q.value = .4;
+  const ng = AC.createGain(); ng.gain.value = .5;
+  noise.connect(lp); lp.connect(ng); ng.connect(ambGain); noise.start();
+  const osc = AC.createOscillator(); osc.type = "sine"; osc.frequency.value = 62;
+  const og = AC.createGain(); og.gain.value = .3;
+  osc.connect(og); og.connect(ambGain); osc.start();
+  const lfo = AC.createOscillator(); lfo.frequency.value = .07;   // slow breathing swell
+  const lg = AC.createGain(); lg.gain.value = .12;
+  lfo.connect(lg); lg.connect(og.gain); lfo.start();
+}
+$("#soundBtn").onclick = () => {
+  soundOn = !soundOn;
+  $("#soundBtn").setAttribute("aria-pressed", String(soundOn));
+  if (soundOn){
+    ensureAudio(); AC.resume();
+    ambGain.gain.setTargetAtTime(.05, AC.currentTime, .8);
+    announce("Room sound on");
+  } else if (AC){
+    ambGain.gain.setTargetAtTime(0, AC.currentTime, .4);
+    announce("Room sound off");
+  }
+};
+function chime(){                        // a soft two-note arrival bell
+  if (!soundOn || !AC) return;
+  [[988, 0], [1319, .13]].forEach(([f, dt]) => {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = "sine"; o.frequency.value = f;
+    g.gain.setValueAtTime(0, AC.currentTime + dt);
+    g.gain.linearRampToValueAtTime(.05, AC.currentTime + dt + .02);
+    g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime + dt + 1.4);
+    o.connect(g); g.connect(AC.destination);
+    o.start(AC.currentTime + dt); o.stop(AC.currentTime + dt + 1.5);
+  });
+}
+
+/* ── [10] FLAT FALLBACK + NAV + INIT ────────────────────────────── */
+function buildFlat(){
+  $("#fAtrium").innerHTML = PIECES.map(p => `
+    <button class="f-card" data-piece="${p.id}" aria-expanded="false">
+      <span class="f-art">${artHTML(p.art)}</span>
+      <span class="f-head"><b>${p.title}</b><span>${p.kick}</span></span>
+      <span class="f-more">Tap to read ↓</span>
+      <span class="f-info"><span class="f-info-in"><p>${p.body}</p>
+        <span class="fi-tags">${tagsHTML(p.tags)}</span></span></span>
+    </button>`).join("");
+  $$("#fAtrium .f-card").forEach(b => b.onclick = () => {
+    const open = b.classList.toggle("open");
+    b.setAttribute("aria-expanded", String(open));
+    b.querySelector(".f-more").textContent = open ? "Tap to close ↑" : "Tap to read ↓";
+  });
+  $("#fWork").innerHTML = PROJECTS.map(p => `
+    <button class="f-thumb" data-project="${p.id}" aria-label="${p.num} ${p.name} — ${p.type}. Open the website.">
+      ${thumbHTML(p)}
+      <span class="f-plac"><i>${p.num}</i><b>${p.name}</b><span>${p.type}</span></span>
+    </button>`).join("");
+  $$("#fWork .f-thumb").forEach(b => b.onclick = () => openViewer(b.dataset.project));
+  $("#flatStart").onclick = openModal;
+}
+$("#brand").onclick = () => {
+  if (document.body.classList.contains("flat")) scrollTo({ top:0, behavior:"smooth" });
+  else goStation("atrium");
+};
+$$("#navlinks button").forEach(b => b.onclick = () => {
+  const id = b.dataset.nav;
+  if (document.body.classList.contains("flat")){
+    document.querySelector(id === "work" ? "#fWork" : "#fAtrium").scrollIntoView({ behavior:"smooth" });
+    return;
+  }
+  goStation(id === "work" ? "port-left" : id);
+  markNavUsed();
+});
+$("#backCue").onclick = () => { goStation("atrium"); markNavUsed(); };
+$("#prevBtn").onclick = () => { nextStation(-1); markNavUsed(); };
+$("#nextBtn").onclick = () => { nextStation(1); markNavUsed(); };
+$("#dots").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (b){ goStation(b.dataset.station); markNavUsed(); }
+});
+
+buildWorld();
+buildFlat();
+layout();
+started = true;
+Object.assign(cam, { x:0, y:EYE - 40, z:1180, yaw:6 });   // just inside the doors
+requestAnimationFrame(tick);
+const entrance = $("#entrance");
+function enter(){
+  if (entrance.classList.contains("gone")) return;
+  entrance.classList.add("gone");
+  setTimeout(() => entrance.remove(), 1800);
+  if (!document.body.classList.contains("flat")){
+    goStation("atrium");
+    setTimeout(() => {
+      if (!navUsed) showHint("<b>Click</b> to walk · <b>drag</b> to look around · <b>click a frame</b> to step closer", 9000);
+    }, 1500);
+  }
+}
+setTimeout(enter, 2400);
+entrance.addEventListener("click", enter);
+</script>
+</body>
+</html>
