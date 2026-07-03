@@ -83,8 +83,8 @@ body[data-mood="dawn"]{
   --moonC:rgba(255,224,186,.9); --starO:.22;
 }
 body[data-mood="midnight"]{
-  --w1:#111427; --w2:#0c0f1f; --w3:#060810;
-  --cove:rgba(120,150,255,.12);
+  --w1:#171b3a; --w2:#101329; --w3:#0a0c1c;
+  --cove:rgba(130,158,255,.15);
   --fla:rgba(8,10,22,.92); --flb:rgba(4,6,14,.86);
   --spot:rgba(150,180,255,.46); --portal-glow:rgba(90,130,255,.7);
   --amb-a:rgba(38,52,140,.2); --amb-b:rgba(90,120,255,.05);
@@ -125,8 +125,9 @@ img{ max-width:100%; }
 #topnav{
   inset:0 0 auto 0; height:60px;
   display:flex; align-items:center; gap:22px; padding:0 22px;
-  background:linear-gradient(180deg, rgba(6,7,15,.84), rgba(6,7,15,.5));
-  -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px);
+  /* NO backdrop-filter anywhere over the 3D stage — sampling a preserve-3d
+     backdrop makes Chrome's compositor tear and drop the bar entirely */
+  background:linear-gradient(180deg, rgba(6,7,15,.94), rgba(6,7,15,.72));
   border-bottom:1px solid var(--glass-brd);
 }
 #brand{ display:flex; align-items:center; gap:12px; }
@@ -163,8 +164,7 @@ img{ max-width:100%; }
 #botbar .tray{
   pointer-events:auto; display:flex; align-items:center; gap:14px;
   padding:9px 16px; border-radius:30px;
-  background:rgba(10,13,26,.74); border:1px solid var(--glass-brd);
-  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  background:rgba(9,12,23,.9); border:1px solid var(--glass-brd);
   box-shadow:0 10px 40px rgba(0,0,0,.5);
 }
 #backCue{
@@ -216,8 +216,7 @@ img{ max-width:100%; }
 #hint{
   position:fixed; z-index:39; left:50%; bottom:74px; transform:translateX(-50%);
   padding:8px 18px; border-radius:20px; font-size:12.5px; letter-spacing:.06em;
-  color:var(--ink-dim); background:rgba(8,10,20,.65); border:1px solid var(--glass-brd);
-  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  color:var(--ink-dim); background:rgba(8,10,20,.88); border:1px solid var(--glass-brd);
   opacity:0; transition:opacity 1s ease; pointer-events:none; text-align:center;
 }
 #hint.on{ opacity:1; }
@@ -241,10 +240,12 @@ body.flat #stage, body.flat #botbar, body.flat #hint{ display:none; }
 }
 .plane{ position:absolute; }
 .wall, .floor, .sky{ backface-visibility:hidden; }
+/* NOTE: walls/floors/sky render at HALF raster (rs=2..3 in plane()) — px
+   values in wall rules are layout px, i.e. half their world size */
 .wall{
   background:
     linear-gradient(180deg, var(--w1) 0%, var(--w2) 40%, var(--w3) 100%);
-  box-shadow:inset 0 0 140px rgba(0,0,0,.55);
+  box-shadow:inset 0 0 70px rgba(0,0,0,.55);
 }
 /* the rooms are ROOFLESS — sky-glow washes the parapet, with a gilt trim rail */
 .wall::before{
@@ -253,12 +254,13 @@ body.flat #stage, body.flat #botbar, body.flat #hint{ display:none; }
   border-top:1px solid rgba(216,184,120,.26);
 }
 .wall::after{
-  content:""; position:absolute; inset:auto 0 0 0; height:34px;
+  content:""; position:absolute; inset:auto 0 0 0; height:18px;
   background:linear-gradient(180deg, rgba(216,184,120,.16), rgba(216,184,120,.05) 30%, rgba(0,0,0,.4));
   border-top:1px solid rgba(216,184,120,.2);
 }
-/* the lintel is only the top 520px of a wall — keep its gradient aligned */
-.wall.lint{ background-size:100% 1300px; background-repeat:no-repeat; }
+/* the lintel is only the top of a wall — keep its gradient aligned
+   (650 layout px = the 1300-world-px wall height at rs=2) */
+.wall.lint{ background-size:100% 650px; background-repeat:no-repeat; }
 .wall.lint::after{ display:none; }
 .floor{
   /* slightly translucent so mirrored artworks shimmer through (5D: LIGHT) */
@@ -281,7 +283,7 @@ body.flat #stage, body.flat #botbar, body.flat #hint{ display:none; }
     radial-gradient(1px 1px at 66px 148px, rgba(255,244,214,.75), transparent 55%),
     radial-gradient(1.3px 1.3px at 192px 42px, rgba(255,255,255,.7), transparent 55%),
     radial-gradient(.9px .9px at 160px 168px, rgba(200,214,255,.7), transparent 55%);
-  background-size:234px 196px;
+  background-size:140px 118px;   /* layout px — ×3 in world via raster scale */
 }
 .sky::after{ /* faint milky-way band, slowly breathing */
   content:""; position:absolute; inset:-4%;
@@ -612,18 +614,15 @@ body.walking .frame{ pointer-events:none; }
 #entrance .enter{ margin-top:30px; font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:var(--ink-dim); animation:entBlink 2.4s ease 1.4s infinite; }
 @keyframes entBlink{ 0%,100%{opacity:.35;} 50%{opacity:.9;} }
 
-#amb{ /* screen-space ambient light wash over the room */
+#amb{ /* ambient light wash + vignette merged into ONE overlay layer */
   position:fixed; inset:0; z-index:20; pointer-events:none;
   background:
+    radial-gradient(118% 90% at 50% 46%, transparent 58%, rgba(2,3,8,.62) 100%),
     radial-gradient(80% 60% at 50% 0%, var(--amb-a), transparent 70%),
     radial-gradient(70% 46% at 50% 100%, var(--amb-b), transparent 70%);
 }
-#vig{ /* cinematic vignette */
-  position:fixed; inset:0; z-index:21; pointer-events:none;
-  background:radial-gradient(118% 90% at 50% 46%, transparent 58%, rgba(2,3,8,.62) 100%);
-}
 #grain{
-  position:fixed; inset:-40px; z-index:22; pointer-events:none; opacity:.05;
+  position:fixed; inset:-40px; z-index:22; pointer-events:none; opacity:.065;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
 }
 #motes{ position:fixed; inset:0; z-index:23; pointer-events:none; overflow:hidden; }
@@ -831,9 +830,9 @@ body.flat #motes, body.flat #amb{ display:none; }
 #modal[hidden]{ display:none; }
 .m-back{
   position:absolute; inset:0; cursor:pointer;
-  /* near-opaque so the 3D scene can never bleed through */
-  background:rgba(4,5,12,.94);
-  -webkit-backdrop-filter:blur(22px); backdrop-filter:blur(22px);
+  /* near-opaque so the 3D scene can never bleed through (no backdrop-filter
+     over the 3D stage — it tears the compositor) */
+  background:rgba(4,5,12,.97);
 }
 .m-card{
   position:relative; width:min(560px, 100%); max-height:92vh; overflow-y:auto;
@@ -977,9 +976,8 @@ body.flat #flat{ display:block; }
 <!-- the 5D room (built by script) -->
 <div id="stage"><div id="world"></div></div>
 
-<!-- atmosphere: ambient wash, vignette, film grain, dust motes -->
+<!-- atmosphere: ambient wash + vignette, film grain, dust motes -->
 <div id="amb"></div>
-<div id="vig"></div>
 <div id="grain"></div>
 <div id="motes" aria-hidden="true"></div>
 
@@ -1356,7 +1354,7 @@ const WARM = "255,214,150", MOON = "186,205,255";
 function buildRoom(zc, isPortfolio){
   // planes are slightly OVERSIZED (+10/+8) so edges overlap instead of
   // leaving hairline AA gaps that flicker while the camera moves
-  const fl = plane("floor", W + 10, D + 10, T(0, HH, zc, "rotateX(90deg)"));
+  const fl = plane("floor", W + 10, D + 10, T(0, HH, zc, "rotateX(90deg)"), null, 2);
   const pools = isPortfolio
     ? [[-1200,-2200],[-1200,-3000],[-520,-3880],[520,-3880],[1200,-3000],[1200,-2200],[0,-1330,420,240,.12],
        [0,-2600,1150,660,.05,MOON],
@@ -1369,27 +1367,27 @@ function buildRoom(zc, isPortfolio){
        [1200,620,240,140,.07,WARM],[1200,-780,240,140,.07,WARM],
        [-320,-1290,220,130,.06,WARM],[320,-1290,220,130,.06,WARM],
        [-620,1290,220,130,.06,WARM],[620,1290,220,130,.06,WARM]];
-  fl.style.background = floorPools(zc, pools) +
-    `,repeating-linear-gradient(90deg, rgba(200,210,255,.028) 0 2px, transparent 2px 236px)` +
+  fl.style.background = floorPools(zc, pools, 2) +
+    `,repeating-linear-gradient(90deg, rgba(200,210,255,.028) 0 1px, transparent 1px 118px)` +
     `,linear-gradient(180deg, var(--fla), var(--flb) 55%, var(--fla))`;
   world.append(fl);
   // NO ceiling — the atelier is open to the night sky
   // side walls
-  world.append(plane("wall", D + 10, H + 8, T(-HW, 0, zc, "rotateY(90deg)")));
-  world.append(plane("wall", D + 10, H + 8, T( HW, 0, zc, "rotateY(-90deg)")));
+  world.append(plane("wall", D + 10, H + 8, T(-HW, 0, zc, "rotateY(90deg)"), null, 2));
+  world.append(plane("wall", D + 10, H + 8, T( HW, 0, zc, "rotateY(-90deg)"), null, 2));
   if (isPortfolio){
-    world.append(plane("wall", W + 10, H + 8, T(0, 0, zc - HD)));      // far wall
-    doorwayWall(zc + HD, 180);                                          // wall back to atrium
+    world.append(plane("wall", W + 10, H + 8, T(0, 0, zc - HD), null, 2));   // far wall
+    doorwayWall(zc + HD, 180);                                                // wall back to atrium
   }
 }
 /* the shared wall with the glowing doorway, built from three segments */
 function doorwayWall(z, ry){
   const segW = (W - DOOR.w) / 2, segX = (DOOR.w + segW) / 2;
   const rot = ry ? `rotateY(${ry}deg)` : "";
-  world.append(plane("wall", segW, H + 8, T(-segX, 0, z, rot)));
-  world.append(plane("wall", segW, H + 8, T( segX, 0, z, rot)));
+  world.append(plane("wall", segW, H + 8, T(-segX, 0, z, rot), null, 2));
+  world.append(plane("wall", segW, H + 8, T( segX, 0, z, rot), null, 2));
   // lintel strip above the door opening, centred between door top and ceiling
-  world.append(plane("wall lint", DOOR.w, H - DOOR.h, T(0, -(HH - (H - DOOR.h)/2), z, rot)));
+  world.append(plane("wall lint", DOOR.w, H - DOOR.h, T(0, -(HH - (H - DOOR.h)/2), z, rot), null, 2));
 }
 
 /* frames -------------------------------------------------------- */
@@ -1470,10 +1468,10 @@ function buildPortal(){
 }
 function buildSky(){
   // one starlit plane high above both roofless rooms. IMPORTANT: keep the
-  // LAYOUT size modest and enlarge with scale() — a physically huge plane
-  // (e.g. 9000×10000) rasterizes at full size and hangs the GPU. The scale
-  // blur is invisible in a night sky.
-  world.append(plane("sky", 3000, 3200, T(0, -1800, -1300, "rotateX(-90deg) scale(2)")));
+  // LAYOUT size modest and enlarge with the raster scale — a physically huge
+  // plane (e.g. 9000×10000) rasterizes at full size and hangs the GPU. The
+  // softness is invisible in a night sky. World coverage: 6000×6420.
+  world.append(plane("sky", 6000, 6420, T(0, -1800, -1300, "rotateX(-90deg)"), null, 3));
 }
 function buildSconces(){
   const S = [];
@@ -1515,7 +1513,7 @@ function buildDots(){
 function buildWorld(){
   buildRoom(0, false);
   doorwayWall(-HD, 0);
-  world.append(plane("wall", W + 10, H + 8, T(0, 0, HD, "rotateY(180deg)")));  // wall behind you
+  world.append(plane("wall", W + 10, H + 8, T(0, 0, HD, "rotateY(180deg)"), null, 2));  // wall behind you
   buildRoom(R2Z, true);
   buildSky();
   buildSconces();
@@ -1537,7 +1535,7 @@ let queue = [];                                 // walk legs (tweened in order)
 let station = "atrium", focused = null;
 let pendingFocus = null, pendingOpen = null;
 let dragging = false, started = false;
-let walkAmp = 0, idleAmp = 0, wasWalking = false;   // eased motion amplitudes
+let walkAmp = 0, wasWalking = false, lastWorldT = "";   // eased walk amplitude
 
 const ease = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2;
 const shortest = (a,b) => ((b - a + 540) % 360) - 180;
@@ -1588,21 +1586,25 @@ function tick(now){
   }
   look.yaw   += (look.tYaw   - look.yaw)*.14;
   look.pitch += (look.tPitch - look.pitch)*.14;
-  // bob & idle-sway fade in/out smoothly — snapping them on/off reads as a jolt
+  // snap the easing tails to true zero — asymptotes never land on their own
+  if (look.tYaw === 0   && Math.abs(look.yaw)   < .01) look.yaw = 0;
+  if (look.tPitch === 0 && Math.abs(look.pitch) < .01) look.pitch = 0;
+  // NO idle sway: a transform that changes every frame forces the compositor
+  // to re-sort every plane forever — that constant churn IS the at-rest
+  // flicker. The room must be rock-still whenever the visitor is.
   const walking = queue.length > 0;
   if (walking !== wasWalking){
     wasWalking = walking;
     document.body.classList.toggle("walking", walking);
   }
   walkAmp += ((walking ? 1 : 0) - walkAmp)*.06;
-  // sway pauses while reading a focused piece — swimming text reads as a glitch
-  idleAmp += (((walking || dragging || focused) ? 0 : 1) - idleAmp)*.04;
-  const idle = Math.sin(now/5600)*.9*idleAmp;    // gentle breath at rest
-  const bob  = Math.sin(now/300)*2.4*walkAmp;    // soft footsteps in transit
-  world.style.transform =
+  if (!walking && walkAmp < .002) walkAmp = 0;
+  const bob = Math.sin(now/300)*2.4*walkAmp;     // soft footsteps in transit
+  const t =
     `translateZ(${P}px) rotateX(${look.pitch.toFixed(3)}deg)` +
-    ` rotateY(${(-(cam.yaw + look.yaw + idle)).toFixed(3)}deg)` +
+    ` rotateY(${(-(cam.yaw + look.yaw)).toFixed(3)}deg)` +
     ` translate3d(${(-cam.x).toFixed(2)}px,${(-(cam.y + bob)).toFixed(2)}px,${(-cam.z).toFixed(2)}px)`;
+  if (t !== lastWorldT){ lastWorldT = t; world.style.transform = t; }
   requestAnimationFrame(tick);
 }
 
@@ -1969,6 +1971,10 @@ buildFlat();
 layout();
 started = true;
 Object.assign(cam, { x:0, y:EYE - 40, z:1180, yaw:6 });   // just inside the doors
+// apply the camera BEFORE first paint — one frame of untransformed world
+// reads as a glitchy flash at load
+world.style.transform = `translateZ(${P}px) rotateX(0deg) rotateY(${-cam.yaw}deg)` +
+  ` translate3d(${-cam.x}px,${-cam.y}px,${-cam.z}px)`;
 requestAnimationFrame(tick);
 const entrance = $("#entrance");
 function enter(){
@@ -1982,7 +1988,11 @@ function enter(){
     }, 1500);
   }
 }
-setTimeout(enter, 2400);
+// hold the doors until the display fonts are in (or 2.2s, whichever is
+// first) so the reveal never catches mid-load font pop-in
+const fontsReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+Promise.race([fontsReady, new Promise(r => setTimeout(r, 2200))])
+  .then(() => setTimeout(enter, 1300));
 entrance.addEventListener("click", enter);
 </script>
 </body>
