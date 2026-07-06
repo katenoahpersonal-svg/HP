@@ -733,12 +733,24 @@ body.flat #motes, body.flat #amb{ display:none; }
   padding:30px 26px; border-radius:16px; background:var(--sc);
   border:1px solid color-mix(in srgb, var(--si) 10%, transparent);
   transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  width:100%; text-align:left; display:block; cursor:pointer;
 }
 .s-card:hover{ transform:translateY(-5px); border-color:var(--sa); box-shadow:0 18px 44px rgba(0,0,0,.16); }
 .s-card .dot{ width:34px; height:34px; border-radius:10px; margin-bottom:18px;
   background:linear-gradient(135deg, var(--sa), var(--sa2)); }
-.s-card h3{ font-size:18.5px; margin-bottom:9px; }
-.s-card p{ font-size:14.5px; line-height:1.65; color:var(--sm); }
+.s-card .ct{ font-size:18.5px; margin-bottom:9px; font-weight:600; }
+.site.serif .s-card .ct{ font-family:var(--serif); }
+.s-card .cd{ font-size:14.5px; line-height:1.65; color:var(--sm); }
+/* "read more" affordance — cards & tiles open detail pages */
+.c-more{
+  margin-top:16px; font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--sa); font-weight:700; opacity:0; transform:translateX(-5px);
+  transition:opacity .3s ease, transform .3s ease;
+}
+.s-tile .c-more{ margin-top:10px; }
+.s-card:hover .c-more, .s-tile:hover .c-more,
+.s-card:focus-visible .c-more, .s-tile:focus-visible .c-more{ opacity:1; transform:none; }
+.site.narrow .c-more{ opacity:1; transform:none; }   /* touch: always visible */
 .s-work{ display:grid; grid-template-columns:repeat(2,1fr); gap:22px; }
 .s-tile{
   border-radius:16px; overflow:hidden; background:var(--sc); text-align:left;
@@ -822,6 +834,47 @@ body.flat #motes, body.flat #amb{ display:none; }
 .h-phone .line{ position:absolute; left:16%; right:16%; height:9px; border-radius:5px;
   background:color-mix(in srgb, var(--si) 20%, transparent); }
 .h-phone .l1{ bottom:26%; } .h-phone .l2{ bottom:18%; right:36%; background:var(--sa); }
+
+/* — detail pages (the "new page within the popup") — */
+.pg{ animation:pgIn .5s cubic-bezier(.2,.7,.3,1) both; }
+@keyframes pgIn{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce){ .pg{ animation:none; } }
+#vUrl .v-path{ opacity:.6; }
+.s-nav .s-logo[data-home]{ cursor:pointer; }
+.d-top{ display:flex; align-items:center; gap:14px; padding:24px 7% 0; }
+.d-back{ font-size:13.5px; color:var(--sa); font-weight:600; padding:8px 0; }
+.d-back:hover{ text-decoration:underline; }
+.d-crumb{ margin-left:auto; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--sm); }
+.d-head{ padding:26px 7% 32px; max-width:960px; }
+.d-head h1{ font-size:clamp(30px, 4vw, 54px); line-height:1.06; letter-spacing:-.015em; margin:14px 0 12px; }
+.d-lede{ font-size:18px; line-height:1.65; color:var(--sm); max-width:52ch; }
+.d-art{ height:230px; margin:0 7%; border-radius:18px;
+  background:linear-gradient(120deg, var(--sa) -40%, var(--sd) 50%, var(--sa2) 140%); }
+.d-art.a2{ background:linear-gradient(240deg, var(--sa2) -30%, var(--sd) 46%, var(--sa) 135%); }
+.d-art.a3{ background:radial-gradient(120% 160% at 14% 0%, var(--sa2) -30%, var(--sd) 52%, var(--sa) 160%); }
+.d-art.a4{ background:linear-gradient(180deg, var(--sd), var(--sa2) 170%); }
+.d-grid{ display:grid; grid-template-columns:1.6fr .9fr; gap:6%; padding:44px 7%; align-items:start; }
+.d-body p{ font-size:16.5px; line-height:1.85; margin-bottom:20px;
+  color:color-mix(in srgb, var(--si) 86%, var(--sm)); }
+.d-quote{ margin-top:30px; padding:22px 26px; border-left:3px solid var(--sa);
+  background:var(--sd); border-radius:0 14px 14px 0; font-size:16px; line-height:1.65; font-style:italic; }
+.d-quote::before{ content:"“"; color:var(--sa); }
+.d-quote::after{ content:"”"; color:var(--sa); }
+.site.serif .d-quote{ font-family:var(--serif); }
+.d-quote span{ display:block; margin-top:10px; font-style:normal; font-size:11.5px;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--sm); }
+.d-quote span::before, .d-quote span::after{ content:none; }
+.d-specs{ border:1px solid color-mix(in srgb, var(--si) 12%, transparent);
+  border-radius:16px; background:var(--sc); padding:8px 22px; }
+.d-specs div{ display:flex; justify-content:space-between; gap:14px; padding:13px 0;
+  border-bottom:1px solid color-mix(in srgb, var(--si) 8%, transparent); font-size:13.5px; }
+.d-specs div:last-child{ border-bottom:0; }
+.d-specs b{ color:var(--sm); font-weight:600; letter-spacing:.05em; }
+.d-next{ display:flex; align-items:center; gap:18px; padding:0 7% 46px; }
+.d-next > span{ font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--sm); }
+.site.narrow .d-grid{ grid-template-columns:1fr; gap:26px; }
+.site.narrow .d-art{ height:150px; }
+.site.narrow .d-head{ padding-top:18px; }
 </style>
 
 <style>
@@ -1309,6 +1362,71 @@ const PROJECTS = [
       ctaH:"Begin tonight — free for 30 days.", ctaP:"Five minutes. One breath. No credit card.",
       ctaBtn:"Start free", ctaDone:"✓ Sent to your phone" } },
 ];
+
+/* Detail-page copy for every card & case piece inside the Level-3 sites.
+   Arrays follow the same order as site.feats / site.works above. */
+const DETAILS = {
+  lumiere: { meta:{ year:"2025", role:"UX · UI · Build" },
+    feats:[
+      "The shop floor is a single shelf: twelve objects photographed in one continuous light, arranged like a still life rather than a grid. Browsing was designed to feel like walking a vitrine — slow, lateral, one object at a time.",
+      "Every product page carries its maker's mark, batch number and a short note from the bench it left. Traceability became storytelling — even the receipt reads like a small certificate.",
+      "Gifting is a checkout path of its own: wrapping choices, a pressed-card editor, and delivery windows written in plain language. No pop-ups, no upsells — generosity shouldn't feel like a funnel." ],
+    works:[
+      "The winter hero. The product page opens on a full-bleed still of warmed brass against deep umber, the price set quietly beneath. Conversion rose when the noise fell away.",
+      "Six tones, one weave. A comparison view drapes each tone over the same table scene, so choosing feels like styling a room rather than picking a swatch.",
+      "A serving set that photographs like jewellery. The 360° viewer is built from twenty-four stills — no WebGL, just patience — so the glow reads on every device.",
+      "The seasonal landing page: all twelve objects in one scrolling tableau, the shelf slowly dimming to candlelight as you reach the end. The list signup waits in the dark." ] },
+  northwind: { meta:{ year:"2025", role:"UX/UI · Booking flow" },
+    feats:[
+      "Each route begins as hand annotations on a paper map by someone who lives there. We digitised the maps without flattening them — the itinerary keeps its handwriting.",
+      "The booking flow shows the twelve seats as a fireside circle, filling as travellers join. Scarcity is honest here, so the interface simply tells the truth.",
+      "Itineraries are written by day-rhythm, not checklist — mornings, weathers, options. Each day gets one card, and the design refuses to let it overflow." ],
+    works:[
+      "Aurora forecasts, sea-eagle sightings and a packing list that adjusts to the week's weather — the trip page becomes a living briefing as departure approaches.",
+      "A room-by-room gallery carved in blue light. The type stays white-on-glacier and the photography sets the temperature.",
+      "An eight-day cycling route mapped against hours of daylight — the elevation profile doubles as a sun chart, so riders plan sleep the way others plan lunch.",
+      "One village, no plan: a single long scroll of the valley, annotated with quiet options rather than activities. The button says 'unpack', not 'book'." ] },
+  sok: { meta:{ year:"2024", role:"Web design · Art direction" },
+    feats:[
+      "Twelve seats around the hearth, each bookable by name. The reservation flow shows the counter itself — you choose where you'll sit, and the fire stays in view.",
+      "A living index of the cellar: every jar has an age, a lineage and tasting notes that update as it matures. It reads like a library catalogue for flavour.",
+      "One toggle removes the menu entirely — descriptions, courses, everything. What remains is a date, a seat, and trust. Regulars book it first." ],
+    works:[
+      "Course three, documented: charred, glazed, rested in ash. The dish page is a single photograph and forty words — restraint is the recipe here too.",
+      "Year-two kimchi photographed like portraiture. The archive grid ages with the jars — older entries darken gently at the edges.",
+      "A service captured mid-breath at 21:14. This night became the reservations hero — steam, hands, and the twelve seats you could be sitting in.",
+      "The last pour has its own page: the late seating, the quieter menu, the walk home. Some guests only ever book this one." ] },
+  fernwell: { meta:{ year:"2026", role:"Product UI · Design system" },
+    feats:[
+      "Boards subscribe to your stack directly — billing, warehouse, CRM — and reconcile in the open. Hover any number and it shows its sources, not a tooltip platitude.",
+      "Every projection carries its model, its assumptions, and one plain-English sentence a CFO can read aloud. Confidence intervals are drawn, never hidden.",
+      "Thresholds learn your baseline before they speak. When Fernwell pings, it's one calm sentence with the chart attached — and it never pings twice about the same thing." ],
+    works:[
+      "MRR, cohorts and momentum in one quiet screen. The board opens on the delta since Monday — the only number most teams actually need.",
+      "Cohort curves with the survivorship story annotated in-line. Grab any curve and see exactly which customers it is made of.",
+      "Months of runway in honest ink, with hiring plans and scenario toggles that redraw the horizon as you drag them. It has ended arguments.",
+      "One calm email each Friday: three numbers, one sentence each, written in your team's own tone. Its open rate embarrasses every newsletter." ] },
+  marlowe: { meta:{ year:"2024", role:"Identity · Editorial · Site" },
+    feats:[
+      "We begin with a hundred sentences and end with one. Wordmark, palette and type all argue for that sentence — nothing decorative survives the edit.",
+      "Print-grade typography brought to screens: true small caps, hanging punctuation, a measure that respects the reader. The journal is set like a novel because it's read like one.",
+      "Campaigns are storyboarded before they are designed — every image has a sentence it must earn. We direct the shoot, the crop, and the silence around it." ],
+    works:[
+      "A florist rebranded in serif — stems drawn into the letterforms, packaging in archival green. The shop now looks the way it smells.",
+      "A quarterly set like literature: one essay, one photo series, no sidebars. Readers finish it, which is the whole metric.",
+      "Family banking, said plainly. We replaced the fintech gradient playbook with warm paper tones and sentences a grandmother would trust.",
+      "Skincare with its voice down: lowercase unboxing copy, ingredients as an honest table, and a bottle that photographs like a monument." ] },
+  bloom: { meta:{ year:"2025", role:"Mobile UI · Motion" },
+    feats:[
+      "Five minutes of breath before your inbox wins. The session starts with the phone face-down, guided by voice alone — the screen only lights when you're done.",
+      "Check-ins are one thumb-stroke across a gradient, never a form. Weeks later the strokes become weather — patterns you can see without being scored.",
+      "The app dims with your room, lowers its voice, and closes with the screen already dark. It is designed to be the last tap of the day." ],
+    works:[
+      "The classic, beautifully counted: a single ring that swells and settles with your chest. The animation is tuned for sixty seconds of calm, not spectacle.",
+      "Naps, rain and long stories read slowly. The library shelves by length of rest, not genre — pick the time you have, not the content.",
+      "Progress that forgives a Tuesday: missed days fade instead of breaking. The garden keeps growing — it just grows quietly.",
+      "Amber light, a lower voice, bigger targets for tired thumbs. Night mode isn't a theme — it's a different, kinder app." ] },
+};
 </script>
 
 
@@ -1721,7 +1839,11 @@ stage.addEventListener("click", e => {
 window.addEventListener("keydown", e => {
   if (e.key === "Escape"){
     if (!$("#modal").hidden) closeModal();
-    else if (!$("#viewer").hidden) closeViewer();
+    else if (!$("#viewer").hidden){
+      // step back through the site first: detail page → home → gallery
+      if (sitePage !== "home") renderHome(lastProject);
+      else closeViewer();
+    }
     else if (!document.body.classList.contains("flat") && (station !== "atrium" || focused)) goStation("atrium");
     return;
   }
@@ -1768,22 +1890,43 @@ let rsT; window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setT
 const viewer = $("#viewer"), siteRoot = $("#siteRoot");
 let lastProject = null, mobileView = false, vCloseT = null;
 
+/* Every mock site is a small MULTI-PAGE prototype: the home page, plus a
+   detail page per feature card and case tile ("sitePage" is the router).  */
+let sitePage = "home";
+const slug = t => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 28);
+function setUrl(p, path){
+  $("#vUrl").innerHTML = `🔒&nbsp; <b>${p.domain}</b>${path ? `<span class="v-path">/${path}</span>` : ""}`;
+}
+function navHTML(p){
+  const s = p.site, secs = ["feat","work","voice","cta"];
+  const links = s.nav.map((l,i) => `<button data-go="${secs[i]}">${l}</button>`).join("");
+  return `<nav class="s-nav"><div class="s-logo" data-home role="button" tabindex="0">${s.logo}</div>
+    <div class="s-links">${links}</div>
+    <button class="s-btn small" data-go="cta">${s.ctaBtn}</button></nav>`;
+}
+function siteFootHTML(p){
+  return `<footer class="s-foot"><div class="s-logo">${p.site.logo}</div><span>© 2026 ${p.name}</span>
+    <span class="cred">Designed by <b>Hope Pixel</b></span></footer>`;
+}
 function buildSite(p){
   const s = p.site, c = p.c;
+  sitePage = "home";
   siteRoot.className = "site" + (p.serif ? " serif" : "") + (p.dark ? " darkish" : "");
   siteRoot.style.cssText = `--sb:${c.bg};--si:${c.ink};--sa:${c.accent};--sa2:${c.a2};--sc:${c.card};--sm:${c.muted};--sd:${c.soft}`;
-  const secs = ["feat","work","voice","cta"];
-  const links = s.nav.map((l,i) => `<button data-go="${secs[i]}">${l}</button>`).join("");
-  const feats = s.feats.map(f => `<div class="s-card"><div class="dot"></div><h3>${f.t}</h3><p>${f.d}</p></div>`).join("");
-  const works = s.works.map(w => `<button class="s-tile"><span class="art"></span><span class="tx"><b>${w.t}</b><span>${w.d}</span></span></button>`).join("");
+  const feats = s.feats.map((f,i) =>
+    `<button class="s-card" data-open="feat:${i}"><span class="dot"></span>
+      <span class="ct">${f.t}</span><span class="cd">${f.d}</span>
+      <span class="c-more">Read the study →</span></button>`).join("");
+  const works = s.works.map((w,i) =>
+    `<button class="s-tile" data-open="work:${i}"><span class="art"></span>
+      <span class="tx"><b>${w.t}</b><span>${w.d}</span>
+      <span class="c-more">Open the case →</span></span></button>`).join("");
   const art = p.artType === "dash"
     ? `<div class="h-art h-dash"><div class="pane"><div class="row r1"></div><div class="row r2"></div><div class="row r3"></div><div class="row r4"></div><div class="spark"></div></div></div>`
     : p.artType === "phone"
     ? `<div class="h-art h-phone"><div class="pane"><div class="ring"></div><div class="line l1"></div><div class="line l2"></div></div></div>`
     : `<div class="h-art h-arch"><div class="pane"></div></div>`;
-  siteRoot.innerHTML = `
-    <nav class="s-nav"><div class="s-logo">${s.logo}</div><div class="s-links">${links}</div>
-      <button class="s-btn small" data-go="cta">${s.ctaBtn}</button></nav>
+  siteRoot.innerHTML = `${navHTML(p)}<div class="pg">
     <header class="s-hero" data-sec="top"><div>
       <div class="s-kick">${s.kick}</div><h1>${s.heroTitle}</h1><p class="s-sub">${s.heroSub}</p>
       <div class="s-heroBtns"><button class="s-btn" data-go="work">${s.cta1}</button>
@@ -1796,23 +1939,83 @@ function buildSite(p){
       <p class="q-who"><b>${s.qWho}</b> · ${s.qRole}</p></section>
     <section class="s-cta" data-sec="cta"><h2>${s.ctaH}</h2><p>${s.ctaP}</p>
       <button class="s-btn" data-cta-done="${s.ctaDone}">${s.ctaBtn}</button></section>
-    <footer class="s-foot"><div class="s-logo">${s.logo}</div><span>© 2026 ${p.name}</span>
-      <span class="cred">Designed by <b>Hope Pixel</b></span></footer>`;
-  $("#vUrl").innerHTML = `🔒&nbsp; <b>${p.domain}</b>`;
+    ${siteFootHTML(p)}</div>`;
+  setUrl(p, "");
 }
-/* the mockups are workable: nav & buttons smooth-scroll their sections */
+function renderHome(p, thenScrollTo){
+  buildSite(p);
+  applyNarrow();
+  siteRoot.scrollTop = 0;
+  if (thenScrollTo) setTimeout(() => scrollToSec(thenScrollTo), 60);
+}
+function renderDetail(p, type, i){
+  const list = type === "feat" ? p.site.feats : p.site.works;
+  i = ((i % list.length) + list.length) % list.length;
+  sitePage = `${type}:${i}`;
+  const item = list[i];
+  const d = DETAILS[p.id] || {};
+  const more = ((type === "feat" ? d.feats : d.works) || [])[i] || item.d;
+  const meta = d.meta || { year:"2025", role:"Design & build" };
+  const label = type === "feat" ? p.site.featH : p.site.workH;
+  const next = (i + 1) % list.length;
+  const paras = (Array.isArray(more) ? more : [more]).map(t => `<p>${t}</p>`).join("");
+  siteRoot.innerHTML = `${navHTML(p)}<div class="pg s-detail">
+    <div class="d-top">
+      <button class="d-back" data-home>← ${p.name} home</button>
+      <span class="d-crumb">${label} · ${String(i+1).padStart(2,"0")} / ${String(list.length).padStart(2,"0")}</span>
+    </div>
+    <header class="d-head"><div class="s-kick">${p.site.kick}</div>
+      <h1>${item.t}</h1><p class="d-lede">${item.d}</p></header>
+    <div class="d-art a${(i % 4) + 1}"></div>
+    <div class="d-grid">
+      <div class="d-body">${paras}
+        <blockquote class="d-quote">${p.site.quote}<span>— ${p.site.qWho}, ${p.site.qRole}</span></blockquote>
+      </div>
+      <aside class="d-specs">
+        <div><b>Project</b><span>${p.name}</span></div>
+        <div><b>Discipline</b><span>${p.type}</span></div>
+        <div><b>Year</b><span>${meta.year}</span></div>
+        <div><b>Role</b><span>${meta.role}</span></div>
+        <div><b>Studio</b><span>Hope Pixel</span></div>
+      </aside>
+    </div>
+    <div class="d-next"><span>Continue</span>
+      <button class="s-btn ghost small" data-open="${type}:${next}">${list[next].t} →</button>
+    </div>
+    <section class="s-cta"><h2>${p.site.ctaH}</h2><p>${p.site.ctaP}</p>
+      <button class="s-btn" data-cta-done="${p.site.ctaDone}">${p.site.ctaBtn}</button></section>
+    ${siteFootHTML(p)}</div>`;
+  setUrl(p, slug(item.t));
+  applyNarrow();
+  siteRoot.scrollTop = 0;
+  announce(`${item.t} — detail page. Escape returns to the ${p.name} home page.`);
+}
+function scrollToSec(id){
+  const sec = siteRoot.querySelector(`[data-sec="${id}"]`);
+  if (!sec) return;
+  const top = sec.getBoundingClientRect().top - siteRoot.getBoundingClientRect().top + siteRoot.scrollTop - 66;
+  siteRoot.scrollTo({ top: Math.max(0, top), behavior:"smooth" });
+}
+/* the mockups are workable: cards open detail pages, nav smooth-scrolls */
 siteRoot.addEventListener("click", e => {
+  const opn = e.target.closest("[data-open]");
+  if (opn){
+    const [ty, ix] = opn.dataset.open.split(":");
+    renderDetail(lastProject, ty, +ix);
+    return;
+  }
+  if (e.target.closest("[data-home]")){ renderHome(lastProject); return; }
   const go = e.target.closest("[data-go]");
   if (go){
-    const sec = siteRoot.querySelector(`[data-sec="${go.dataset.go}"]`);
-    if (sec){
-      const top = sec.getBoundingClientRect().top - siteRoot.getBoundingClientRect().top + siteRoot.scrollTop - 66;
-      siteRoot.scrollTo({ top: Math.max(0, top), behavior:"smooth" });
-    }
+    if (sitePage !== "home") renderHome(lastProject, go.dataset.go);
+    else scrollToSec(go.dataset.go);
     return;
   }
   const cta = e.target.closest("[data-cta-done]");
   if (cta){ cta.textContent = cta.dataset.ctaDone; cta.style.pointerEvents = "none"; cta.style.opacity = ".78"; }
+});
+siteRoot.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.matches("[data-home]")) renderHome(lastProject);
 });
 function openViewer(id){
   const p = PROJECTS.find(x => x.id === id);
