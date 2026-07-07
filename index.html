@@ -297,9 +297,11 @@ body.flat #stage, body.flat #botbar, body.flat #hint{ display:none; }
 <style>
 /* ── [E] FRAMES, PLACARDS, LIGHT ────────────────────────────────── */
 .frame{
-  position:absolute; text-align:left;
+  position:absolute; text-align:left; cursor:pointer;
   transition:opacity .8s ease;
 }
+/* frames are div[role=button] now — replicate the button-span behaviour */
+.frame span, .frame i, .frame b{ display:block; }
 /* while the camera is walking, frames don't catch hovers/clicks —
    stops mats pulsing mid-glide and mis-clicks during transit */
 body.walking .frame{ pointer-events:none; }
@@ -328,16 +330,24 @@ body.walking .frame{ pointer-events:none; }
   background:#0b0f20;
   transition:opacity .7s ease, filter .7s ease;
 }
-/* rule 2: focused info lives ON the frame, fully contained */
+/* rule 2: focused info lives ON the frame, fully contained.
+   The panel has TWO pages: .fi-main and a per-tag .fi-detail. */
 .frame-info{
   position:absolute; inset:16px; z-index:3; border-radius:3px;
-  display:flex; flex-direction:column; justify-content:center; gap:14px;
-  padding:9% 10%;
-  background:linear-gradient(170deg, rgba(9,12,24,.78), rgba(9,12,24,.62));
+  background:linear-gradient(170deg, rgba(9,12,24,.93), rgba(9,12,24,.84));
   opacity:0; transition:opacity .8s ease .15s; pointer-events:none;
 }
+.fi-main, .fi-detail{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  justify-content:center; gap:14px; padding:9% 10%;
+  transition:opacity .45s ease, transform .45s ease, visibility .45s;
+}
+.fi-detail{ opacity:0; transform:translateY(16px); visibility:hidden; }
+.frame-info.detail-open .fi-main{ opacity:0; transform:translateY(-12px); visibility:hidden; }
+.frame-info.detail-open .fi-detail{ opacity:1; transform:none; visibility:visible; }
+.frame.focused .fi-tag, .frame.focused .fi-back{ pointer-events:auto; }
 .frame.focused .frame-info{ opacity:1; }
-.frame.focused .frame-art{ opacity:.15; filter:blur(2px) saturate(.7); }
+.frame.focused .frame-art{ opacity:.09; filter:blur(2px) saturate(.7); }
 .frame.focused .frame-mat{
   border-color:rgba(240,217,168,.75);
   box-shadow:0 0 0 1px rgba(8,10,20,.9), 0 34px 80px rgba(0,0,0,.65), 0 0 90px rgba(216,184,120,.25), inset 0 0 30px rgba(0,0,0,.5);
@@ -348,10 +358,84 @@ body.walking .frame{ pointer-events:none; }
 .fi-title{ font-family:var(--serif); font-weight:400; font-size:52px; line-height:1.06; }
 .fi-body{ font-size:20px; line-height:1.6; color:var(--ink-dim); font-weight:300; }
 .fi-tags{ display:flex; flex-wrap:wrap; gap:9px; margin-top:6px; }
-.fi-tags span{
+.fi-tags span, .fi-tag{
   font-size:14px; letter-spacing:.08em; padding:6px 14px; border-radius:16px;
   color:var(--peri); border:1px solid rgba(154,165,255,.32);
   background:rgba(91,121,255,.08);
+}
+button.fi-tag{
+  cursor:pointer; transition:border-color .3s, color .3s, background .3s, transform .3s;
+}
+button.fi-tag:hover{
+  border-color:rgba(240,217,168,.65); color:var(--champ-2);
+  background:rgba(216,184,120,.1); transform:translateY(-1px);
+}
+.fi-back{
+  align-self:flex-start; font-size:12px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--champ-2); padding:2px 0 6px; border-bottom:1px solid var(--champ-soft);
+  cursor:pointer; transition:border-color .3s;
+}
+.fi-back:hover{ border-bottom-color:var(--champ-2); }
+.fi-detail{ padding:7% 10%; gap:12px; overflow:hidden; }   /* rule 2: never escape the frame */
+.fi-detail .fi-title{ font-size:34px; }
+.fi-detail .fi-body{ font-size:18px; line-height:1.55; }
+.fi-next{ margin-top:8px; display:flex; }
+/* — tiny per-topic vignettes on the tag pages — */
+.fi-art{
+  position:relative; flex:0 1 88px; min-height:56px; border-radius:10px; overflow:hidden;
+  background:
+    radial-gradient(70% 90% at 72% 8%, rgba(91,121,255,.14), transparent 70%),
+    linear-gradient(160deg, #131a30, #0b0f20);
+  border:1px solid rgba(216,184,120,.22);
+}
+.fi-art i{ position:absolute; }
+.v-ux .a{ left:12%; top:18%; width:34%; height:56%; border:1px solid rgba(154,165,255,.5); border-radius:6px; background:rgba(91,121,255,.08); }
+.v-ux .b{ left:34%; top:32%; width:38%; height:52%; border:1px solid rgba(216,184,120,.5); border-radius:6px; background:rgba(216,184,120,.06); }
+.v-ux .c{ left:78%; top:38%; width:9px; height:9px; border-radius:50%; background:var(--champ-2);
+  box-shadow:0 0 0 5px rgba(216,184,120,.2), 0 0 16px rgba(216,184,120,.7); }
+.v-web .a{ left:20%; top:15%; width:60%; height:70%; border:1px solid rgba(154,165,255,.45); border-radius:7px; background:rgba(10,14,28,.6); }
+.v-web .a::before{ content:""; position:absolute; inset:0 0 auto 0; height:24%; border-bottom:1px solid rgba(154,165,255,.3); background:rgba(91,121,255,.1); }
+.v-web .a::after{ content:""; position:absolute; left:12%; top:44%; width:48%; height:9%; border-radius:3px; background:linear-gradient(90deg, var(--champ), transparent); }
+.v-web .b{ left:32%; top:64%; width:26%; height:6%; border-radius:3px; background:rgba(154,165,255,.4); }
+.v-resp .a{ left:22%; top:20%; width:34%; height:50%; border:1px solid rgba(154,165,255,.5); border-radius:5px; }
+.v-resp .a::after{ content:""; position:absolute; left:32%; right:32%; bottom:-20%; height:9%; background:rgba(154,165,255,.4); border-radius:2px; }
+.v-resp .b{ left:62%; top:24%; width:13%; height:54%; border:1px solid rgba(216,184,120,.6); border-radius:5px; background:rgba(216,184,120,.05); }
+.v-sys i{ width:11%; height:26%; border-radius:5px; border:1px solid rgba(154,165,255,.3); background:rgba(91,121,255,.1); }
+.v-sys .s1{ left:14%; top:20%; background:linear-gradient(135deg,#d8b878,#9a7c3e); border-color:transparent; }
+.v-sys .s2{ left:29%; top:20%; } .v-sys .s3{ left:44%; top:20%; background:rgba(230,168,159,.16); }
+.v-sys .s4{ left:14%; top:54%; } .v-sys .s5{ left:29%; top:54%; background:rgba(216,184,120,.14); } .v-sys .s6{ left:44%; top:54%; }
+.v-sys .tx{ left:64%; top:26%; width:20%; height:7%; background:rgba(236,231,218,.35); border:0; border-radius:3px; }
+.v-sys .tx2{ left:64%; top:42%; width:15%; height:6%; background:rgba(236,231,218,.2); border:0; border-radius:3px; }
+.v-venn i{ width:32%; aspect-ratio:1; border-radius:50%; top:16%; }
+.v-venn .a{ left:24%; border:1px solid rgba(154,165,255,.55); background:rgba(91,121,255,.07); }
+.v-venn .b{ left:44%; border:1px solid rgba(216,184,120,.55); background:rgba(216,184,120,.05); }
+.v-pen .a{ left:8%; top:56%; width:84%; height:2px; transform:rotate(-8deg);
+  background:linear-gradient(90deg, transparent, rgba(216,184,120,.8) 30%, rgba(154,165,255,.8) 75%, transparent); }
+.v-pen .n{ width:10px; height:10px; border-radius:50%; border:1px solid var(--champ-2); background:#0b0f20; }
+.v-pen .n1{ left:28%; top:44%; } .v-pen .n2{ left:64%; top:36%; }
+.v-human .a{ left:39%; top:14%; width:22%; height:72%; border:1px solid rgba(216,184,120,.5);
+  border-radius:50% 50% 6px 6px / 58% 58% 6px 6px; background:rgba(91,121,255,.06); }
+.v-human .b{ left:46.5%; top:32%; width:12px; height:12px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #f4e0b4, #d8b878 65%); box-shadow:0 0 14px rgba(240,217,168,.7); }
+.v-disc .a{ left:39%; top:14%; width:24%; aspect-ratio:1; border-radius:50%; border:2px solid rgba(154,165,255,.6);
+  background:radial-gradient(circle at 36% 30%, rgba(91,121,255,.22), transparent 70%); }
+.v-disc .b{ left:57%; top:62%; width:15%; height:3px; transform:rotate(38deg);
+  background:linear-gradient(90deg, rgba(154,165,255,.7), transparent); }
+.v-des .a{ left:28%; top:16%; width:28%; height:66%; border:1px solid rgba(154,165,255,.45); border-radius:5px; }
+.v-des .a::before{ content:""; position:absolute; left:14%; top:18%; width:56%; height:8%; background:rgba(216,184,120,.65); border-radius:2px; }
+.v-des .a::after{ content:""; position:absolute; left:14%; top:40%; width:70%; height:6%; background:rgba(236,231,218,.25); border-radius:2px; box-shadow:0 11px 0 rgba(236,231,218,.15); }
+.v-des .b{ left:60%; top:34%; width:15%; height:32%; border:1px dashed rgba(216,184,120,.5); border-radius:4px; }
+.v-cre .a{ left:50%; top:50%; transform:translate(-50%,-50%); }
+.v-cre .a::before{ content:"‹ / ›"; font-family:var(--serif); font-style:italic; font-size:26px;
+  letter-spacing:5px; color:var(--champ-2); text-shadow:0 0 18px rgba(216,184,120,.55); }
+.v-lau .a{ left:24%; top:62%; width:42%; height:2px; transform:rotate(-24deg); transform-origin:right center;
+  background:linear-gradient(90deg, transparent, rgba(216,184,120,.8)); }
+.v-lau .b{ left:64%; top:32%; width:11px; height:11px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff, #f0d9a8 55%, #d8b878); box-shadow:0 0 18px rgba(240,217,168,.9); }
+.v-lau .s1, .v-lau .s2{ width:3px; height:3px; border-radius:50%; background:rgba(236,231,218,.7); }
+.v-lau .s1{ left:34%; top:24%; } .v-lau .s2{ left:80%; top:56%; }
+.fi-next .fi-tag{
+  color:var(--champ-2); border-color:var(--champ-soft); background:rgba(216,184,120,.08);
 }
 .fi-cta{
   margin-top:10px; align-self:flex-start; font-size:15px; letter-spacing:.16em;
@@ -1209,6 +1293,25 @@ const PIECES = [
     tags:["01 Discover","02 Design","03 Create","04 Launch"] },
 ];
 
+/* Second-page copy for each tag pill on the atrium frames —
+   arrays follow the same order as the piece's `tags` above. */
+const PIECE_DETAILS = {
+  services: [
+    "Interfaces that think before they're pretty: flows mapped, states named, decisions defended. UX is where most of the project's care is spent — the visuals arrive last and land easily because of it.",
+    "Complete websites, from the first sitemap sketch to the final deployed pixel. Design and build stay in one pair of hands, so nothing is lost in translation between a designer and a developer.",
+    "Designed for the widest cinema screen and the smallest thumb-reach at the same time. Every layout is tested across real widths — not just resized, rethought.",
+    "Colours, type, spacing and components documented into a language your brand keeps speaking after launch — consistent, reusable, easy to hand to any future team." ],
+  about: [
+    "Kate designs the interface and the experience as one piece — the pixels people see and the paths they take through them. Nothing decorative, nothing accidental.",
+    "From brand-new sites to careful redesigns, every project is drawn from scratch around the brand's story. No themes, no templates — ever.",
+    "Every choice is tested against a person, not a metric: can they read it, feel it, find their way? Warmth is a requirement, not a finish." ],
+  process: [
+    "It begins with listening: your brand, your people, what the site must do and for whom. That becomes a short written brief we both sign — the project's north star.",
+    "Moodboards narrow into wireframes, wireframes into full designs you can click through. You see the site at every stage — no big reveal, no surprises.",
+    "The approved design is built pixel-faithful: fast, responsive, accessible. You review it live on your own devices while it's still on the workbench.",
+    "Domain, hosting, analytics and a gentle handover — then the site steps into the light. Kate stays close after launch for tuning and small evolutions." ],
+};
+
 /* Six portfolio projects. Each `site` renders the full Level-3 website.
    c = { bg, ink, accent, a2 (accent-2), card, muted, soft } */
 const PROJECTS = [
@@ -1535,16 +1638,24 @@ function addReflection(f, x, y, z, ry, w, h, inner){
 function buildFrames(){
   // atrium pieces (one per wall — rule 1)
   PIECES.forEach(p => {
-    const f = el("button", "frame");
+    // frames are div[role=button]: they contain REAL buttons (the tag pills),
+    // and buttons must never nest
+    const f = el("div", "frame");
     f.dataset.piece = p.id;
+    f.setAttribute("role", "button");
+    f.setAttribute("tabindex", "0");
     f.setAttribute("aria-label", `${p.kick} — ${p.title}`);
     f.style.cssText = `width:${p.w}px;height:${p.h}px;left:${-p.w/2}px;top:${-p.h/2}px;transform:${T(p.x,p.y,p.z,`rotateY(${p.ry}deg)`)};`;
+    const tagBtns = p.tags.map((t,i) => `<button class="fi-tag" data-tagi="${i}">${t}</button>`).join("");
     f.innerHTML = `<span class="frame-halo"></span><span class="frame-light"></span><span class="frame-lamp"></span>
       <span class="frame-mat">${artHTML(p.art)}<span class="lampglow"></span>
-        <span class="frame-info"><span class="fi-kick">${p.kick}</span>
-          <span class="fi-title">${p.title}</span>
-          <span class="fi-body">${p.body}</span>
-          <span class="fi-tags">${tagsHTML(p.tags)}</span></span>
+        <span class="frame-info">
+          <span class="fi-main"><span class="fi-kick">${p.kick}</span>
+            <span class="fi-title">${p.title}</span>
+            <span class="fi-body">${p.body}</span>
+            <span class="fi-tags">${tagBtns}</span></span>
+          <span class="fi-detail"></span>
+        </span>
       </span>`;
     world.append(f);
     addReflection(f, p.x, p.y, p.z, p.ry, p.w, p.h, `<div class="frame-mat">${artHTML(p.art)}</div>`);
@@ -1556,8 +1667,10 @@ function buildFrames(){
   // portfolio works — spread across three walls, two per wall, wide apart
   PROJECTS.forEach(p => {
     const w = 560, h = 470;
-    const f = el("button", "frame pframe");
+    const f = el("div", "frame pframe");
     f.dataset.project = p.id;
+    f.setAttribute("role", "button");
+    f.setAttribute("tabindex", "0");
     f.setAttribute("aria-label", `${p.num} · ${p.name} — ${p.type}. Open the website.`);
     f.style.cssText = `width:${w}px;height:${h}px;left:${-w/2}px;top:${-h/2}px;transform:${T(p.x,p.y,p.z,`rotateY(${p.ry}deg)`)};`;
     f.innerHTML = `<span class="frame-halo"></span><span class="frame-light"></span><span class="frame-lamp"></span>
@@ -1660,9 +1773,10 @@ const shortest = (a,b) => ((b - a + 540) % 360) - 180;
 const roomOf = z => z > -HD ? 1 : 2;
 
 function focusDist(w,h,mul=1){
-  return Math.max(h*P/(innerHeight*.62), w*P/(innerWidth*.55), 520) * mul;
+  const vw = Math.max(innerWidth, 500), vh = Math.max(innerHeight, 400);  // 0×0-window guard
+  return Math.max(h*P/(vh*.62), w*P/(vw*.55), 520) * mul;
 }
-function portDist(){ return clamp(1600*P/(innerWidth*.94), 860, 1500); }
+function portDist(){ return clamp(1600*P/(Math.max(innerWidth, 500)*.94), 860, 1500); }
 function pieceById(id){ return PIECES.find(p => p.id === id) || PROJECTS.find(p => p.id === id); }
 function focusPose(id, mul=1){
   const p = pieceById(id), rad = p.ry*Math.PI/180;
@@ -1765,8 +1879,9 @@ function onArrive(){
 }
 function setFocused(id){
   focused = id;
+  $$(".frame-info.detail-open").forEach(n => n.classList.remove("detail-open"));
   const inR1 = !!id && PIECES.some(p => p.id === id);
-  $$("button.frame").forEach(f => {
+  $$(".frame").forEach(f => {
     const fid = f.dataset.piece || f.dataset.project;
     const fR1 = !!f.dataset.piece;
     f.classList.toggle("focused", fid === id);
@@ -1820,12 +1935,50 @@ window.addEventListener("pointerup", e => {
   if (swipe){ nextStation(dx < 0 ? 1 : -1); markNavUsed(); }
   pd = null;
 });
+/* a tag pill opens its explanation as a second page ON the frame */
+const VIGNETTES = {
+  services:[["v-ux","a","b","c"], ["v-web","a","b"], ["v-resp","a","b"],
+            ["v-sys","s1","s2","s3","s4","s5","s6","tx","tx2"]],
+  about:   [["v-venn","a","b"], ["v-pen","a","n n1","n n2"], ["v-human","a","b"]],
+  process: [["v-disc","a","b"], ["v-des","a","b"], ["v-cre","a"], ["v-lau","a","b","s1","s2"]],
+};
+function vignetteHTML(id, idx){
+  const v = (VIGNETTES[id] || [])[idx];
+  return v ? `<span class="fi-art ${v[0]}">${v.slice(1).map(c => `<i class="${c}"></i>`).join("")}</span>` : "";
+}
+function openTagPage(f, idx){
+  const p = PIECES.find(x => x.id === f.dataset.piece);
+  if (!p) return;
+  const n = p.tags.length;
+  idx = ((idx % n) + n) % n;
+  f.dataset.tag = idx;
+  f.querySelector(".fi-detail").innerHTML =
+    `<button class="fi-back">← ${p.title}</button>
+     ${vignetteHTML(p.id, idx)}
+     <span class="fi-kick">${p.kick} · ${idx + 1} / ${n}</span>
+     <span class="fi-title">${p.tags[idx]}</span>
+     <span class="fi-body">${(PIECE_DETAILS[p.id] || [])[idx] || ""}</span>
+     <span class="fi-next"><button class="fi-tag" data-tagnav="1">Next — ${p.tags[(idx + 1) % n]} →</button></span>`;
+  f.querySelector(".frame-info").classList.add("detail-open");
+  announce(`${p.tags[idx]} — details. Escape returns to ${p.title}.`);
+}
 stage.addEventListener("click", e => {
   if (suppressClick){ suppressClick = false; return; }
-  const f = e.target.closest("button.frame");
   markNavUsed();
+  const tag = e.target.closest(".fi-tag");
+  if (tag){
+    const f = e.target.closest(".frame");
+    openTagPage(f, tag.dataset.tagnav ? +f.dataset.tag + 1 : +tag.dataset.tagi);
+    return;
+  }
+  if (e.target.closest(".fi-back")){
+    e.target.closest(".frame-info").classList.remove("detail-open");
+    return;
+  }
+  const f = e.target.closest(".frame");
   if (f){
-    if (f.dataset.piece) goStation(f.dataset.piece);
+    // clicking the already-focused piece must not restart the walk
+    if (f.dataset.piece){ if (focused !== f.dataset.piece) goStation(f.dataset.piece); }
     else openProject(f.dataset.project);
     return;
   }
@@ -1834,6 +1987,13 @@ stage.addEventListener("click", e => {
     return;
   }
   nextStation(1);                              // click empty space → next wall
+});
+/* frames are div[role=button] — give them native-feeling keyboard activation */
+stage.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("frame")){
+    e.preventDefault();
+    e.target.click();
+  }
 });
 /* keyboard: arrows tour the walls, ESC steps back out, Tab reaches frames */
 window.addEventListener("keydown", e => {
@@ -1844,7 +2004,12 @@ window.addEventListener("keydown", e => {
       if (sitePage !== "home") renderHome(lastProject);
       else closeViewer();
     }
-    else if (!document.body.classList.contains("flat") && (station !== "atrium" || focused)) goStation("atrium");
+    else if (!document.body.classList.contains("flat") && (station !== "atrium" || focused)){
+      // a tag detail page closes first, then the walk home
+      const od = document.querySelector(".frame.focused .frame-info.detail-open");
+      if (od) od.classList.remove("detail-open");
+      else goStation("atrium");
+    }
     return;
   }
   if (!$("#viewer").hidden || !$("#modal").hidden || document.body.classList.contains("flat")) return;
@@ -1855,8 +2020,8 @@ window.addEventListener("keydown", e => {
 /* tabbing to a frame walks the camera to it (and never scrolls the stage) */
 stage.addEventListener("focusin", e => {
   stage.scrollLeft = 0; stage.scrollTop = 0;
-  const f = e.target.closest("button.frame");
-  if (!f || !f.matches(":focus-visible")) return;
+  const f = e.target.closest(".frame");
+  if (!f || !e.target.matches(":focus-visible")) return;
   if (f.dataset.piece){ if (focused !== f.dataset.piece) goStation(f.dataset.piece); }
   else {
     const st = stationForProject(PROJECTS.find(x => x.id === f.dataset.project));
