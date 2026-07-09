@@ -447,15 +447,15 @@ button.fi-tag:hover{
    tall shafts rising past the parapets. (They stay parallel to their wall
    and well below the sky plane, so nothing intersects → no sort flicker.) */
 .frame-light{
-  position:absolute; bottom:99%; left:50%; width:118%; height:560px;
+  position:absolute; bottom:99%; left:50%; width:150%; height:560px;
   transform:translateX(-50%);
-  background:linear-gradient(180deg, transparent 2%, var(--spot) 97%);
-  clip-path:polygon(42% 0, 58% 0, 100% 100%, 0 100%);
-  opacity:.2; filter:blur(6px); pointer-events:none;
+  /* pure radial falloff — clipped cones read as hard-edged shapes, not light */
+  background:radial-gradient(46% 96% at 50% 98%, var(--spot) 0%, transparent 66%);
+  opacity:.42; filter:blur(14px); pointer-events:none;
   transition:opacity .8s ease;
 }
-.frame:hover .frame-light{ opacity:.34; }
-.frame.focused .frame-light{ opacity:.44; }
+.frame:hover .frame-light{ opacity:.6; }
+.frame.focused .frame-light{ opacity:.72; }
 /* brass picture lamp mounted over every frame (5D: LIGHT) */
 .frame-lamp{
   position:absolute; left:50%; top:-30px; transform:translateX(-50%);
@@ -474,9 +474,9 @@ button.fi-tag:hover{
 }
 .frame.dimmed .frame-light{ opacity:.05; }
 .frame-halo{
-  position:absolute; inset:-11% -14%; z-index:-1; pointer-events:none;
-  background:radial-gradient(58% 58% at 50% 42%, var(--spot), transparent 72%);
-  opacity:.2; filter:blur(6px); transition:opacity .8s ease;
+  position:absolute; inset:-14% -18%; z-index:-1; pointer-events:none;
+  background:radial-gradient(56% 56% at 50% 42%, var(--spot), transparent 68%);
+  opacity:.2; filter:blur(13px); transition:opacity .8s ease;
 }
 .frame.focused .frame-halo{ opacity:.34; }
 /* mirrored twin in the glossy floor */
@@ -503,14 +503,12 @@ button.fi-tag:hover{
 }
 .sconce::before, .sconce::after{
   content:""; position:absolute; left:50%; transform:translateX(-50%);
-  width:72%; opacity:.3; filter:blur(6px);
+  width:98%; opacity:.42; filter:blur(11px);
 }
-.sconce::before{ bottom:55%; height:42%;
-  background:linear-gradient(0deg, var(--spot), transparent 92%);
-  clip-path:polygon(40% 100%, 60% 100%, 96% 0, 4% 0); }
-.sconce::after{ top:55%; height:42%;
-  background:linear-gradient(180deg, var(--spot), transparent 92%);
-  clip-path:polygon(40% 0, 60% 0, 96% 100%, 4% 100%); }
+.sconce::before{ bottom:53%; height:45%;
+  background:radial-gradient(55% 105% at 50% 100%, var(--spot), transparent 68%); }
+.sconce::after{ top:53%; height:45%;
+  background:radial-gradient(55% 105% at 50% 0%, var(--spot), transparent 68%); }
 /* engraved gallery placard (portfolio frames) */
 .placard{
   position:absolute; left:16px; right:16px; bottom:16px; height:44px;
@@ -627,6 +625,11 @@ button.fi-tag:hover{
   background:rgba(0,0,0,.1); border-radius:10px; padding:3px 10px; margin:0 8px;
 }
 .thumb.darkish .t-url{ background:rgba(255,255,255,.07); }
+.t-live{
+  font-size:9px; letter-spacing:.16em; font-weight:700; text-transform:uppercase;
+  color:#4fd88a; border:1px solid rgba(79,216,138,.5); border-radius:9px; padding:2px 8px;
+  box-shadow:0 0 12px rgba(79,216,138,.25);
+}
 .t-hero{ padding:20px 18px 16px; background:linear-gradient(135deg, var(--sd), var(--sb) 72%); }
 .t-kick{ font-size:10.5px; letter-spacing:.3em; text-transform:uppercase; color:var(--sa); font-weight:600; }
 .t-title{ font-size:25px; line-height:1.14; font-weight:600; margin-top:7px; letter-spacing:-.01em; }
@@ -654,10 +657,10 @@ button.fi-tag:hover{
   background:linear-gradient(180deg, rgba(122,146,255,.06), var(--portal-glow) 140%);
   border:1px solid rgba(154,165,255,.35); border-bottom:0;
   border-radius:210px 210px 0 0;
-  box-shadow:0 0 60px var(--portal-glow), inset 0 0 80px rgba(122,146,255,.22);
+  box-shadow:0 0 100px var(--portal-glow), inset 0 0 90px rgba(122,146,255,.18);
   transition:box-shadow .6s ease, opacity .8s ease;
 }
-.portal-veil:hover{ box-shadow:0 0 110px var(--portal-glow), inset 0 0 110px rgba(122,146,255,.3); }
+.portal-veil:hover{ box-shadow:0 0 150px var(--portal-glow), inset 0 0 120px rgba(122,146,255,.26); }
 .portal-veil.dimmed{ opacity:.12; }
 .portal-veil .pulse{
   position:absolute; inset:6% 10%; border-radius:inherit; pointer-events:none;
@@ -789,7 +792,7 @@ body.flat #motes, body.flat #amb{ display:none; }
 .s-links button{ padding:8px 12px; font-size:13.5px; border-radius:16px; opacity:.75; transition:all .25s; }
 .s-links button:hover{ opacity:1; background:var(--sd); color:var(--sa); }
 .s-btn{
-  display:inline-block; padding:13px 26px; border-radius:26px;
+  display:inline-block; padding:13px 26px; border-radius:26px; text-decoration:none;
   background:var(--sa); color:var(--sb); font-weight:600; font-size:14.5px;
   transition:transform .25s ease, box-shadow .25s ease, opacity .25s;
   box-shadow:0 8px 26px color-mix(in srgb, var(--sa) 36%, transparent);
@@ -1257,7 +1260,7 @@ const R2Z  = -2600;                            // portfolio room z-offset
 const EYE  = -30;                              // camera eye height (y, - is up)
 const DOOR = { w:460, h:780 };                 // doorway in the shared wall
 // Station tour order (click empty space to advance)
-const TOUR = ["atrium","services","about","process","port-left","port-back","port-right"];
+const TOUR = ["atrium","services","about","process","port-left","port-back","port-right","port-entry"];
 // Camera poses per station. Focus poses are derived from frame positions.
 const POSES = {
   // z:520 keeps the back wall filling ~90% of the view — further back the
@@ -1269,11 +1272,13 @@ const POSES = {
   "port-left":  () => ({ x:-ROOM.W/2 + portDist(), y:EYE, z:-2600, yaw:90  }),
   "port-back":  () => ({ x:0, y:EYE, z:-3900 + portDist(), yaw:0 }),
   "port-right": () => ({ x: ROOM.W/2 - portDist(), y:EYE, z:-2600, yaw:-90 }),
+  "port-entry": () => ({ x:0, y:EYE, z:-1300 - entryDist(), yaw:180 }),   // the live wall — both real clients flank the door
 };
 const STATION_LABEL = {
   "atrium":"The Atrium", "services":"Services — west wall", "about":"About — the featured canvas",
   "process":"Process — east wall", "port-left":"Portfolio — west wall",
   "port-back":"Portfolio — north wall", "port-right":"Portfolio — east wall",
+  "port-entry":"Portfolio — the live wall",
 };
 const STATION_FOCUS = { services:"services", about:"about", process:"process" };
 
@@ -1464,6 +1469,59 @@ const PROJECTS = [
       qWho:"Ana Reyes", qRole:"Bloom member, year two",
       ctaH:"Begin tonight — free for 30 days.", ctaP:"Five minutes. One breath. No credit card.",
       ctaBtn:"Start free", ctaDone:"✓ Sent to your phone" } },
+
+  /* — the REAL one: Kate's live client build, hung on the entry wall — */
+  { id:"dfo", num:"07", name:"DFO Fireworks", type:"Fireworks · Live Client",
+    x:-715, y:-50, z:-1310, ry:180, serif:false, dark:true, artType:"arch",
+    live:"https://dfofireworks.com",
+    c:{ bg:"#140b07", ink:"#fbeedd", accent:"#ff5a2a", a2:"#ffc23d", card:"#20120b", muted:"#c49a82", soft:"#2a160d" },
+    domain:"dfofireworks.com",
+    site:{
+      logo:"DFO <em>Fireworks</em>", nav:["Shop","Locations","Deals","Contact"],
+      kick:"Discount Fireworks Outlet", heroTitle:"Light up the night for less.",
+      heroSub:"The outlet superstore for aerials, fountains and family packs — big-show fireworks at prices that leave room for a bigger show.",
+      cta1:"Shop the lineup", cta2:"Find a location",
+      featH:"Built for the big weekend", featLede:"A real storefront, designed and iterated live across two firework seasons.",
+      feats:[
+        { t:"Shop by show", d:"Aerials, fountains and family packs, organised the way people actually buy — by the show they want to put on." },
+        { t:"Real outlet pricing", d:"Deals and bundles in plain cards with honest compare-at prices, updated all season long." },
+        { t:"Drive-up locations", d:"Every stand with hours, directions and a one-tap map link — built for the drive home." } ],
+      workH:"Inside the build", workLede:"Four pieces of the live site, tuned iteration by iteration.",
+      works:[
+        { t:"The 3D product ring", d:"Headliners in an orbiting carousel" },
+        { t:"Locations & directions", d:"Find the nearest stand, fast" },
+        { t:"The mobile stack", d:"One-thumb browsing, parking-lot ready" },
+        { t:"Fourth of July drop", d:"The landing page for the week that matters" } ],
+      quote:"A real storefront with real traffic — designed, built and iterated live through two firework seasons.",
+      qWho:"Hope Pixel", qRole:"Case notes",
+      ctaH:"This one's real — go see it.", ctaP:"Discount Fireworks Outlet is live right now. Step out of the gallery and into the show.",
+      ctaBtn:"See it live", ctaDone:"↗" } },
+
+  { id:"matuska", num:"08", name:"Matuska", type:"Taxidermy Supply · Live Client",
+    x:715, y:-50, z:-1310, ry:180, serif:true, dark:false, artType:"dash",
+    live:"https://matuskataxidermy.com",
+    c:{ bg:"#f1eee3", ink:"#242b20", accent:"#3e5c3a", a2:"#b98a4e", card:"#faf8f0", muted:"#6f7562", soft:"#e3ddc9" },
+    domain:"matuskataxidermy.com",
+    site:{
+      logo:"Matuska <em>Taxidermy</em>", nav:["Shop","Reproductions","Brands","Support"],
+      kick:"Matuska Taxidermy Supply", heroTitle:"The taxidermist's supply house.",
+      heroSub:"Forms, fish reproductions, eyes and tools for working taxidermists — a multi-million-dollar catalogue, organised so the right part is three clicks away.",
+      cta1:"Shop the catalogue", cta2:"How it's organised",
+      featH:"A working store for working pros", featLede:"Designed, merchandised and managed year-round by Hope Pixel.",
+      feats:[
+        { t:"Thousands of SKUs, tamed", d:"Deep product lines organised into departments a pro can move through without thinking." },
+        { t:"The reproduction funnel", d:"High-volume fish reproduction lines collapsed into doorway tiles that guide instead of overwhelm." },
+        { t:"Managed, not just launched", d:"Season after season of merchandising, updates and care on the live store." } ],
+      workH:"Inside the store", workLede:"Four pieces of an e-commerce engine that ships every day.",
+      works:[
+        { t:"Doorway tiles", d:"One tile per line — Lake Country fish first" },
+        { t:"Department navigation", d:"Homepage to exact form, fast" },
+        { t:"Product page order", d:"Long option lists, kept legible" },
+        { t:"The storefront engine", d:"BigCommerce, tuned with Script Manager" } ],
+      quote:"A multi-million-dollar storefront run as a living catalogue — not a brochure.",
+      qWho:"Hope Pixel", qRole:"Case notes",
+      ctaH:"See the store in the wild.", ctaP:"Matuska Taxidermy Supply is live and shipping, every day.",
+      ctaBtn:"See it live", ctaDone:"↗" } },
 ];
 
 /* Detail-page copy for every card & case piece inside the Level-3 sites.
@@ -1529,6 +1587,40 @@ const DETAILS = {
       "Naps, rain and long stories read slowly. The library shelves by length of rest, not genre — pick the time you have, not the content.",
       "Progress that forgives a Tuesday: missed days fade instead of breaking. The garden keeps growing — it just grows quietly.",
       "Amber light, a lower voice, bigger targets for tired thumbs. Night mode isn't a theme — it's a different, kinder app." ] },
+  dfo: { meta:{ year:"2025–26", role:"Design · Build · Ongoing" },
+    feats:[
+      ["Categories mirror how families actually shop — the big aerials, the driveway fountains, the kid-safe novelties — so nobody needs industry jargon to build a great show.",
+       "The catalogue follows the season's rhythm too: what leads the homepage in June isn't what matters on July 3rd, and the layout shifts with it."],
+      ["Deals and bundles sit in plain cards with honest compare-at pricing — the design stays quiet and lets the discount do the talking.",
+       "The best-value bundles get their own row, so the deal is impossible to miss on a phone screen."],
+      ["Every stand gets hours, directions and a one-tap map link, built for people planning a stop on the drive home.",
+       "July traffic is overwhelmingly mobile, so the location cards were tuned for exactly that parking-lot moment."] ],
+    works:[
+      ["The season's headliners orbit in a 3D ring carousel — draggable, self-spinning, and tuned to stay silky on mid-range phones.",
+       "It went through several full rebuilds — flat grid, circumference-even ring, then the desktop ring — before it earned the homepage."],
+      ["The locations section was rebuilt around real behaviour: find the nearest stand, check the hours, tap for directions. No map-widget clutter.",
+       "Footer, socials and contact all point the same direction — get people to a stand."],
+      ["Dozens of shipped iterations went into the mobile stack — card spacing, title lines, thumb reach — until browsing feels effortless one-handed.",
+       "Mobile-only patches ship without touching the desktop layout, so a phone fix can never regress the big screen."],
+      ["The big-weekend landing: video header up top, the product ring beneath, deals stacked below — engineered for the one week that matters most.",
+       "Load discipline everywhere: no opening animations, nothing standing between the visitor and the fireworks."] ] },
+  matuska: { meta:{ year:"Ongoing", role:"Design · Merchandising · Management" },
+    feats:[
+      ["Taxidermy supply runs deep — forms by species and pose, eyes by size and colour, tools by trade. The department structure keeps a working pro moving: shop, find, back to the bench.",
+       "Navigation is built around how taxidermists actually order — by the job on the table, not by manufacturer catalogue codes."],
+      ["Reproduction fish lines carry enormous SKU counts. Instead of pouring hundreds of blanks into one grid, high-volume lines collapse into doorway tiles — one tile per line, each opening into its own focused shelf.",
+       "Lake Country fish led the rollout, implemented through BigCommerce's Script Manager so the storefront stays fast and the catalogue underneath stays untouched."],
+      ["A store this size is never finished: seasonal merchandising, new lines, inventory hygiene, and a steady drip of small UX improvements.",
+       "Hope Pixel manages the storefront year-round — the difference between a site that was launched once and a store that keeps selling."] ],
+    works:[
+      ["The doorway-tile pattern turns a wall of near-identical products into a decision a customer can actually make: pick the line first, then pick the fish.",
+       "Each tile is layered on with Script Manager, so lines roll out one by one without re-platforming anything."],
+      ["Homepage to the exact form in a handful of clicks — departments, filters and naming were reworked so the catalogue reads like a supply house, not a database export.",
+       "Category order gets reviewed against what's actually selling, season by season."],
+      ["Product pages keep long option lists legible — sizes, poses, left and right turns — laid out so the variant you need is obvious at a glance.",
+       "Specs stay high on the page and the add-to-cart never drifts out of reach."],
+      ["BigCommerce underneath, tuned on top: Script Manager injections for the funnel work, careful theme surgery, and performance kept honest.",
+       "The platform was chosen for the business — rock-solid checkout and inventory — with every custom behaviour layered safely above it."] ] },
 };
 </script>
 
@@ -1581,7 +1673,8 @@ function buildRoom(zc, isPortfolio){
        [0,-2600,1150,660,.05,MOON],
        [-1200,-1700,240,140,.07,WARM],[-1200,-2600,240,140,.07,WARM],[-1200,-3500,240,140,.07,WARM],
        [1200,-1700,240,140,.07,WARM],[1200,-2600,240,140,.07,WARM],[1200,-3500,240,140,.07,WARM],
-       [0,-3880,220,130,.06,WARM],[-1050,-3880,220,130,.06,WARM],[1050,-3880,220,130,.06,WARM]]
+       [0,-3880,220,130,.06,WARM],[-1050,-3880,220,130,.06,WARM],[1050,-3880,220,130,.06,WARM],
+       [-715,-1330,340,190,.1],[715,-1330,340,190,.1]]
     : [[-1200,-80],[-700,-1280],[1200,-80],[0,-1290,420,240,.14],
        [0,60,1150,660,.05,MOON],
        [-1200,620,240,140,.07,WARM],[-1200,-780,240,140,.07,WARM],
@@ -1622,7 +1715,7 @@ function thumbHTML(p){
   const s = p.site;
   return `<span class="thumb ${p.serif ? "serif" : ""} ${p.dark ? "darkish" : ""}"
     style="--sb:${p.c.bg};--si:${p.c.ink};--sa:${p.c.accent};--sa2:${p.c.a2};--sc:${p.c.card};--sd:${p.c.soft}">
-    <span class="t-bar"><span class="t-dots"><i></i><i></i><i></i></span><span class="t-url">${p.domain}</span></span>
+    <span class="t-bar"><span class="t-dots"><i></i><i></i><i></i></span><span class="t-url">${p.domain}</span>${p.live ? `<span class="t-live">live</span>` : ""}</span>
     <span class="t-hero"><span class="t-kick">${s.kick}</span><span class="t-title">${s.heroTitle}</span>
       <span class="t-btns"><i></i><i></i></span></span>
     <span class="t-cards"><i></i><i></i><i></i></span>
@@ -1777,6 +1870,7 @@ function focusDist(w,h,mul=1){
   return Math.max(h*P/(vh*.62), w*P/(vw*.55), 520) * mul;
 }
 function portDist(){ return clamp(1600*P/(Math.max(innerWidth, 500)*.94), 860, 1500); }
+function entryDist(){ return clamp(2100*P/(Math.max(innerWidth, 500)*.94), 1000, 1900); }  // wider: frames sit at ±715
 function pieceById(id){ return PIECES.find(p => p.id === id) || PROJECTS.find(p => p.id === id); }
 function focusPose(id, mul=1){
   const p = pieceById(id), rad = p.ry*Math.PI/180;
@@ -1862,7 +1956,9 @@ function openProject(id){
   queue = legsTo(focusPose(id, .85));
   syncUI();
 }
-function stationForProject(p){ return p.ry === 90 ? "port-left" : p.ry === 0 ? "port-back" : "port-right"; }
+function stationForProject(p){
+  return p.ry === 90 ? "port-left" : p.ry === 0 ? "port-back" : p.ry === 180 ? "port-entry" : "port-right";
+}
 function nextStation(dir){
   const i = TOUR.indexOf(station);
   goStation(TOUR[(i + dir + TOUR.length) % TOUR.length]);
@@ -2073,6 +2169,12 @@ function siteFootHTML(p){
   return `<footer class="s-foot"><div class="s-logo">${p.site.logo}</div><span>© 2026 ${p.name}</span>
     <span class="cred">Designed by <b>Hope Pixel</b></span></footer>`;
 }
+/* live projects (DFO) get a real outbound link instead of the demo CTA */
+function ctaBtnHTML(p){
+  return p.live
+    ? `<a class="s-btn" href="${p.live}" target="_blank" rel="noopener">Visit ${p.domain} ↗</a>`
+    : `<button class="s-btn" data-cta-done="${p.site.ctaDone}">${p.site.ctaBtn}</button>`;
+}
 function buildSite(p){
   const s = p.site, c = p.c;
   sitePage = "home";
@@ -2103,7 +2205,7 @@ function buildSite(p){
     <section class="s-quote" data-sec="voice"><p class="q-text">${s.quote}</p>
       <p class="q-who"><b>${s.qWho}</b> · ${s.qRole}</p></section>
     <section class="s-cta" data-sec="cta"><h2>${s.ctaH}</h2><p>${s.ctaP}</p>
-      <button class="s-btn" data-cta-done="${s.ctaDone}">${s.ctaBtn}</button></section>
+      ${ctaBtnHTML(p)}</section>
     ${siteFootHTML(p)}</div>`;
   setUrl(p, "");
 }
@@ -2148,7 +2250,7 @@ function renderDetail(p, type, i){
       <button class="s-btn ghost small" data-open="${type}:${next}">${list[next].t} →</button>
     </div>
     <section class="s-cta"><h2>${p.site.ctaH}</h2><p>${p.site.ctaP}</p>
-      <button class="s-btn" data-cta-done="${p.site.ctaDone}">${p.site.ctaBtn}</button></section>
+      ${ctaBtnHTML(p)}</section>
     ${siteFootHTML(p)}</div>`;
   setUrl(p, slug(item.t));
   applyNarrow();
